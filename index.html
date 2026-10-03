@@ -300,15 +300,19 @@
       <!-- ==================== RIGHT 5 COLS: SWITCHABLE ITINERARY LIST & AI TRAVEL CHATBOT ==================== -->
       <div id="rightPaneCol" class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-2xl flex flex-col lg:h-[820px] shadow-xs overflow-hidden">
 
-        <!-- Right Pane Top Switcher: [📍 行程站点 (39)] vs [🤖 AI 随身导游] -->
+        <!-- Right Pane Top Switcher: [📍 行程站点 (39)] vs [📸 实拍集锦] vs [🤖 AI 随身导游] -->
         <div class="p-2.5 border-b border-[var(--border)] bg-[var(--content)]/40 flex items-center justify-between gap-2">
           <div class="flex items-center bg-[var(--content)] p-1 rounded-xl border border-[var(--border)] w-full">
-            <button id="tabBtnList" onclick="switchRightTab('list')" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1.5">
-              <span>📍 行程名录</span>
+            <button id="tabBtnList" onclick="switchRightTab('list')" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1">
+              <span>📍 行程</span>
               <span id="listCountBadge" class="px-1.5 py-0.2 rounded-full text-[11px] bg-[var(--secondary)] text-[var(--secondary-foreground)] font-mono-code">39</span>
             </button>
-            <button id="tabBtnAi" onclick="switchRightTab('ai')" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1.5">
-              <span>🤖 AI 随身导游</span>
+            <button id="tabBtnPhotos" onclick="switchRightTab('photos')" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1">
+              <span>📸 实拍集锦</span>
+              <span id="photoCountBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500/20 text-amber-600 dark:text-amber-400 font-extrabold font-mono-code">1</span>
+            </button>
+            <button id="tabBtnAi" onclick="switchRightTab('ai')" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1">
+              <span>🤖 AI 导游</span>
               <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold">Ask</span>
             </button>
           </div>
@@ -336,6 +340,24 @@
 
           <div id="placeListContainer" class="flex-1 overflow-y-auto divide-y divide-[var(--border)]/70 p-2 space-y-1">
             <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- PANE C: LIVE TRAVEL PHOTOS GALLERY (实拍集锦) -->
+        <div id="photosSubPane" class="hidden flex-1 flex flex-col min-h-[520px] lg:min-h-0 bg-[var(--background)]/40">
+          <div class="px-3 py-2.5 border-b border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-2">
+            <div>
+              <div class="text-xs font-extrabold text-[var(--foreground)] flex items-center gap-1.5">
+                <span>📸 2026 南美旅途实拍集锦 (Live Moments)</span>
+              </div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">
+                支持从 Google Photos 共享相册或 Google Chat 自动同步上墙
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">实时更新</span>
+          </div>
+          <div id="photosGalleryContainer" class="flex-1 overflow-y-auto p-3 space-y-3.5">
+            <!-- Populated dynamically by renderPhotosGallery() -->
           </div>
         </div>
 
@@ -416,15 +438,43 @@
       <span>🗺️ 地图与详情</span>
     </button>
     <button data-mview="list" class="mview-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--muted-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
-      <span>📋 行程列表</span>
+      <span>📋 列表</span>
+    </button>
+    <button data-mview="photos" class="mview-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--muted-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
+      <span>📸 实拍</span>
     </button>
     <button data-mview="ai" class="mview-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--muted-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
-      <span>🤖 AI 导游</span>
+      <span>🤖 导游</span>
     </button>
     <button onclick="openDriverModal(selectedId)" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
       <span>🚕 问路/口语</span>
     </button>
   </nav>
+
+  <!-- ==================== LIVE PHOTO LIGHTBOX MODAL ==================== -->
+  <div id="photoLightboxModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePhotoLightbox()">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
+      <div class="px-3.5 py-2.5 border-b border-[var(--border)] flex items-center justify-between gap-2 bg-[var(--content)]/60">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="px-2 py-0.5 rounded-lg text-xs font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400" id="lightboxDayBadge">D3 · 10/03</span>
+          <span class="text-xs font-extrabold text-[var(--foreground)] truncate" id="lightboxTitle">巴塔哥尼亚破云晚霞与野生麦哲伦雁</span>
+        </div>
+        <button onclick="closePhotoLightbox()" class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer shrink-0">✕ 关闭</button>
+      </div>
+      <div class="overflow-y-auto p-3 sm:p-4 space-y-3">
+        <div class="rounded-xl overflow-hidden bg-black flex items-center justify-center max-h-[62vh]">
+          <img id="lightboxImg" src="" alt="旅途实拍" class="max-h-[62vh] w-auto object-contain" />
+        </div>
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <span class="text-xs font-extrabold text-[var(--primary)]" id="lightboxLocation">📍 #13 埃尔卡拉法特 · 尼梅兹泻湖湿地</span>
+            <a id="lightboxFullLink" href="#" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-[var(--muted-foreground)] hover:text-[var(--primary)]">查看原图 ↗</a>
+          </div>
+          <p class="text-xs sm:text-sm text-[var(--foreground)] leading-relaxed" id="lightboxCaption"></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== WIKIPEDIA DEEP-READ & CULTURAL STORY MODAL ==================== -->
   <div id="wikiModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
@@ -2359,6 +2409,9 @@
             </button>
           </div>
 
+          <!-- Live Travel Photo Showcase (if available for this place or city layer) -->
+          ${getPlaceLivePhotosHtml(p)}
+
           <!-- Cultural Story Preview + Address + Schedule -->
           <div class="p-3 rounded-xl bg-[var(--content)]/45 border border-[var(--border)] space-y-2 text-xs sm:text-sm">
             <div class="flex items-start justify-between gap-2">
@@ -2848,25 +2901,160 @@
       </p>
     `);
 
+    // ==================== LIVE TRAVEL PHOTOS GALLERY & GOOGLE PHOTOS AUTO-SYNC ====================
+    let LIVE_PHOTOS = [
+      {
+        id: "calafate-20261003-nimez-goose",
+        placeId: 13,
+        relatedPlaceIds: [10, 11, 12, 13, 14],
+        layer: "calafate",
+        day: "D3 · 10/03",
+        date: "2026-10-03",
+        city: "El Calafate, Patagonia",
+        country: "AR",
+        titleZh: "巴塔哥尼亚破云晚霞与野生麦哲伦雁",
+        titleEn: "Upland Goose & Andean Sunset in El Calafate",
+        locationZh: "#13 埃尔卡拉法特 · 尼梅兹泻湖湿地 & 安第斯雪山",
+        locationLocal: "Reserva Laguna Nimez & Cordillera de los Andes",
+        captionZh: "黄昏时分的 El Calafate 湖畔草甸，一只巴塔哥尼亚野生雌性麦哲伦雁（Upland Goose / 西语 Cauquén común）在静谧水湾前侧首回望；中景是依坡散落的小镇屋舍与苍茫的巴塔哥尼亚高原阶地，远处皑皑白雪的安第斯山脉在厚云间裂开一道暖金色晚霞。",
+        url: "https://youngapple.github.io/south-america-2026/photos/el_calafate_nimez_sunset.jpg",
+        fullUrl: "https://youngapple.github.io/south-america-2026/photos/el_calafate_nimez_sunset_orig.jpg",
+        tags: ["El Calafate", "Patagonia", "野生动物", "安第斯雪山", "晚霞"]
+      }
+    ];
+
+    window.openPhotoLightbox = function(photoId) {
+      const ph = LIVE_PHOTOS.find(x => x.id === photoId) || LIVE_PHOTOS[0];
+      if (!ph) return;
+      document.getElementById("lightboxDayBadge").textContent = ph.day;
+      document.getElementById("lightboxTitle").textContent = ph.titleZh;
+      document.getElementById("lightboxImg").src = ph.url;
+      document.getElementById("lightboxLocation").textContent = `📍 ${ph.locationZh}`;
+      document.getElementById("lightboxFullLink").href = ph.fullUrl || ph.url;
+      document.getElementById("lightboxCaption").textContent = ph.captionZh;
+      document.getElementById("photoLightboxModal").classList.remove("hidden");
+    };
+
+    window.closePhotoLightbox = function() {
+      document.getElementById("photoLightboxModal").classList.add("hidden");
+    };
+
+    window.getPlaceLivePhotosHtml = function(p) {
+      const exact = LIVE_PHOTOS.filter(ph => ph.placeId === p.id || (ph.relatedPlaceIds && ph.relatedPlaceIds.includes(p.id)));
+      if (exact.length === 0) return "";
+      const ph = exact[0];
+      const isDirect = ph.placeId === p.id;
+      return `
+        <div class="rounded-2xl border-2 border-amber-500/40 bg-amber-500/10 overflow-hidden shadow-xs">
+          <div class="px-3 py-2 flex items-center justify-between gap-2 border-b border-amber-500/20">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-500 text-white">📸 旅途实拍</span>
+              <span class="text-xs font-extrabold text-[var(--foreground)] truncate">${ph.titleZh}</span>
+            </div>
+            <button onclick="switchRightTab('photos')" class="text-[11px] font-bold text-[var(--primary)] hover:underline shrink-0 cursor-pointer">
+              实拍集锦 (${LIVE_PHOTOS.length}) ›
+            </button>
+          </div>
+          <div class="p-2.5 flex flex-col sm:flex-row gap-3 items-center">
+            <div onclick="openPhotoLightbox('${ph.id}')" class="w-full sm:w-40 h-44 sm:h-28 rounded-xl overflow-hidden bg-black shrink-0 cursor-pointer relative group">
+              <img src="${ph.url}" alt="${ph.titleZh}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <span class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/70 text-white">🔍 点击放大</span>
+            </div>
+            <div class="space-y-1.5 text-xs flex-1 min-w-0">
+              <div class="font-bold text-[var(--primary)]">${ph.day} · ${ph.locationZh}</div>
+              <p class="text-[var(--foreground)] leading-relaxed line-clamp-3">${ph.captionZh}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    window.renderPhotosGallery = function() {
+      const badge = document.getElementById("photoCountBadge");
+      if (badge) badge.textContent = LIVE_PHOTOS.length;
+      const box = document.getElementById("photosGalleryContainer");
+      if (!box) return;
+      box.innerHTML = LIVE_PHOTOS.map(ph => `
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--card)] overflow-hidden shadow-xs space-y-2.5">
+          <div onclick="openPhotoLightbox('${ph.id}')" class="relative w-full h-64 sm:h-72 bg-black cursor-pointer overflow-hidden group">
+            <img src="${ph.url}" alt="${ph.titleZh}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+            <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-black/75 text-white backdrop-blur-xs">${ph.day}</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/90 text-white backdrop-blur-xs">${ph.city}</span>
+            </div>
+            <span class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-black/75 text-white">🔍 查看高清大图</span>
+          </div>
+          <div class="px-3.5 pb-3.5 space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="text-sm font-extrabold text-[var(--foreground)]">${ph.titleZh}</div>
+                <div class="text-xs font-bold text-[var(--primary)] mt-0.5">📍 ${ph.locationZh}</div>
+              </div>
+              <button onclick="selectPlace(${ph.placeId || 13}, true, true)" class="shrink-0 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">
+                🗺️ 定位站点
+              </button>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">${ph.captionZh}</p>
+            <div class="flex flex-wrap gap-1 pt-0.5">
+              ${(ph.tags || []).map(t => `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[var(--content)] text-[var(--muted-foreground)]">#${t}</span>`).join("")}
+            </div>
+          </div>
+        </div>
+      `).join("") + `
+        <div class="p-3.5 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--content)]/40 space-y-1.5 text-xs">
+          <div class="font-extrabold text-[var(--foreground)]">☁️ Google Photos 自动同步通道已就绪</div>
+          <p class="text-[var(--muted-foreground)] leading-relaxed">
+            回酒店连上 Wi-Fi 后，你只需在手机 Google Photos 把照片加入共享相册（或发在 Google Chat），后台脚本会自动抓取高清图、智能匹配当天站点并发布到这里！
+          </p>
+        </div>
+      `;
+    };
+
+    // Fetch latest photos/manifest.json dynamically so new synced photos appear without touching HTML
+    fetch("photos/manifest.json?t=" + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && Array.isArray(data.photos) && data.photos.length > 0) {
+          LIVE_PHOTOS = data.photos;
+          renderPhotosGallery();
+          renderDetailCard();
+        }
+      })
+      .catch(() => {});
+
     // ==================== RIGHT PANE & MOBILE VIEW SWITCHERS ====================
     window.switchRightTab = function(tab) {
       rightTab = tab;
       const listPane = document.getElementById("listSubPane");
+      const photosPane = document.getElementById("photosSubPane");
       const aiPane = document.getElementById("aiSubPane");
       const btnList = document.getElementById("tabBtnList");
+      const btnPhotos = document.getElementById("tabBtnPhotos");
       const btnAi = document.getElementById("tabBtnAi");
 
+      const activeCls = "flex-1 py-1.5 px-2 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1";
+      const inactiveCls = "flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1";
+
+      listPane.classList.add("hidden");
+      if (photosPane) photosPane.classList.add("hidden");
+      aiPane.classList.add("hidden");
+
+      btnList.className = inactiveCls;
+      if (btnPhotos) btnPhotos.className = inactiveCls;
+      btnAi.className = inactiveCls;
+
       if (tab === "ai") {
-        listPane.classList.add("hidden");
         aiPane.classList.remove("hidden");
-        btnAi.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1.5";
-        btnList.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1.5";
+        btnAi.className = activeCls;
         if (window.innerWidth < 1024) setMobileView("ai");
+      } else if (tab === "photos") {
+        if (photosPane) photosPane.classList.remove("hidden");
+        if (btnPhotos) btnPhotos.className = activeCls;
+        renderPhotosGallery();
+        if (window.innerWidth < 1024) setMobileView("photos");
       } else {
-        aiPane.classList.add("hidden");
         listPane.classList.remove("hidden");
-        btnList.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1.5";
-        btnAi.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1.5";
+        btnList.className = activeCls;
       }
     };
 
@@ -2882,6 +3070,7 @@
 
       const mapCol = document.getElementById("mapPaneCol");
       const rightCol = document.getElementById("rightPaneCol");
+      const photosPane = document.getElementById("photosSubPane");
 
       if (window.innerWidth < 1024) {
         if (mview === "explore") {
@@ -2891,10 +3080,18 @@
           mapCol.classList.add("hidden");
           rightCol.classList.remove("hidden");
           switchRightTab("list");
+        } else if (mview === "photos") {
+          mapCol.classList.add("hidden");
+          rightCol.classList.remove("hidden");
+          document.getElementById("listSubPane").classList.add("hidden");
+          document.getElementById("aiSubPane").classList.add("hidden");
+          if (photosPane) photosPane.classList.remove("hidden");
+          renderPhotosGallery();
         } else if (mview === "ai") {
           mapCol.classList.add("hidden");
           rightCol.classList.remove("hidden");
           document.getElementById("listSubPane").classList.add("hidden");
+          if (photosPane) photosPane.classList.add("hidden");
           document.getElementById("aiSubPane").classList.remove("hidden");
         }
       } else {
@@ -3118,6 +3315,7 @@
     renderMap(true);
     renderDetailCard();
     renderPlaceList();
+    renderPhotosGallery();
   </script>
 </body>
 </html>
