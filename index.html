@@ -1,0 +1,3123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0284c7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>2026 南美15日四语随身伴侣 | Google Maps · 发音跟读 · Wiki百科 · AI随身导游</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230284c7'/%3E%3Cpath d='M32 11c-9.4 0-17 7.6-17 17 0 12.8 17 25 17 25s17-12.2 17-25c0-9.4-7.6-17-17-17zm0 23.5a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13z' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --card-foreground: #0f172a;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --primary: #0284c7;
+      --primary-foreground: #ffffff;
+      --secondary: #e0f2fe;
+      --secondary-foreground: #0369a1;
+      --muted: #f1f5f9;
+      --muted-foreground: #475569;
+      --accent: #0ea5e9;
+      --map-water: #cbe6ff;
+      --map-land: #f8fafc;
+      --map-land-stroke: #cbd5e1;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #090d16;
+        --foreground: #f8fafc;
+        --card: #111827;
+        --card-foreground: #f8fafc;
+        --content: #1e293b;
+        --border: #283548;
+        --primary: #0ea5e9;
+        --primary-foreground: #ffffff;
+        --secondary: #0c4a6e;
+        --secondary-foreground: #e0f2fe;
+        --muted: #1e293b;
+        --muted-foreground: #94a3b8;
+        --accent: #38bdf8;
+        --map-water: #0c192c;
+        --map-land: #162032;
+        --map-land-stroke: #334155;
+      }
+    }
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      overscroll-behavior-y: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono-code { font-family: var(--font-mono); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .pin-group { cursor: pointer; }
+    .pin-pulse {
+      animation: pulseRing 1.8s infinite ease-out;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      70% { transform: scale(1.9); opacity: 0; }
+      100% { transform: scale(1.9); opacity: 0; }
+    }
+    @keyframes soundWave {
+      0%, 100% { transform: scaleY(0.4); }
+      50% { transform: scaleY(1.15); }
+    }
+    .wave-bar {
+      display: inline-block;
+      width: 3px;
+      height: 12px;
+      margin: 0 1px;
+      border-radius: 2px;
+      background: currentColor;
+      animation: soundWave 0.7s infinite ease-in-out;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+
+    .gm-pin-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 11.5px;
+      border: 2.5px solid #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.38);
+      transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease;
+    }
+    .gm-pin-wrap.selected {
+      transform: scale(1.34);
+      box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.42), 0 6px 14px rgba(0,0,0,0.5);
+      z-index: 1000 !important;
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px !important;
+      padding: 2px !important;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.25) !important;
+      background: var(--card) !important;
+      color: var(--foreground) !important;
+    }
+    .leaflet-popup-tip { background: var(--card) !important; }
+    .leaflet-popup-content { margin: 10px 12px !important; }
+    .leaflet-container { font-family: var(--font-sans) !important; }
+    .touch-target { min-height: 44px; }
+  </style>
+</head>
+<body class="pb-20 lg:pb-6">
+
+  <!-- ==================== SINGLE COMPACT STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-30 bg-[var(--card)]/95 backdrop-blur-md border-b border-[var(--border)]">
+    <div class="max-w-7xl mx-auto px-3 py-2 flex flex-col gap-1.5">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0 shrink-0">
+          <div class="w-8 h-8 rounded-xl bg-[var(--primary)] text-white flex items-center justify-center font-extrabold text-sm shadow-xs shrink-0">
+            SA
+          </div>
+          <div class="hidden sm:block min-w-0">
+            <h1 class="text-sm font-extrabold tracking-tight text-[var(--foreground)] truncate">
+              南美 2026 随身行 · South America Companion
+            </h1>
+            <p class="text-[11px] text-[var(--muted-foreground)] truncate">
+              🇦🇷 阿根廷优先西语 · 🇧🇷 巴西优先葡语 · 🔊 跟读 · 📖 Wiki · 🤖 AI 导游
+            </p>
+          </div>
+        </div>
+
+        <!-- Horizontal Region & Today Chips -->
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 flex-1" id="layerTabs">
+          <button data-layer="today" id="btnTodayLayer" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition cursor-pointer flex items-center gap-1" title="自动聚焦今日行程阶段">
+            <span>📅 今日</span>
+            <span id="todayBadgeLabel" class="font-mono-code text-[11px]">D3</span>
+          </button>
+          <button data-layer="all" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-[var(--primary-foreground)] transition cursor-pointer">
+            🌎 全程 (39)
+          </button>
+          <button data-layer="ba" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] transition cursor-pointer">
+            🇦🇷 布宜 BA (9)
+          </button>
+          <button data-layer="calafate" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] transition cursor-pointer">
+            🧊 冰川 Calafate (5)
+          </button>
+          <button data-layer="iguazu" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] transition cursor-pointer">
+            🌊 伊瓜苏 Iguazú (6)
+          </button>
+          <button data-layer="amazon" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] transition cursor-pointer">
+            🌴 亚马逊 Manaus (4)
+          </button>
+          <button data-layer="rio" class="layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] transition cursor-pointer">
+            🇧🇷 里约 Rio (15)
+          </button>
+        </div>
+
+        <!-- Right: Search + 4-Language & Export Menu -->
+        <div class="flex items-center gap-1.5 shrink-0 relative">
+          <div class="relative w-28 sm:w-44">
+            <input id="searchInput" type="search" aria-label="搜索行程地点" placeholder="🔍 搜地点/D4/机场..." class="w-full px-2.5 py-1.5 rounded-xl text-xs bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none focus:border-[var(--primary)]" />
+          </div>
+
+          <button id="btnSettingsMenu" aria-label="语言与导出设置" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] cursor-pointer flex items-center gap-1">
+            <span>🌐 四语</span>
+            <span class="text-[10px]">▾</span>
+          </button>
+
+          <!-- Popover Menu for 4-Language Mode + KML/CSV Export -->
+          <div id="settingsPopover" class="hidden absolute right-0 top-11 z-50 w-72 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl p-3 space-y-3">
+            <div>
+              <div class="text-xs font-extrabold text-[var(--foreground)] mb-1.5">🌐 语言显示优先级 (4-Language Mode)</div>
+              <div class="grid grid-cols-1 gap-1" id="langModeList">
+                <button data-lang="smart4" class="lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)] cursor-pointer flex items-center justify-between">
+                  <span>✨ 智能四语 (AR西语优先 · BR葡语优先)</span>
+                  <span>默认</span>
+                </button>
+                <button data-lang="es" class="lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer flex items-center justify-between">
+                  <span>🇦🇷 西班牙语优先 (Español First)</span>
+                </button>
+                <button data-lang="pt" class="lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer flex items-center justify-between">
+                  <span>🇧🇷 葡萄牙语优先 (Português First)</span>
+                </button>
+                <button data-lang="zh" class="lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer flex items-center justify-between">
+                  <span>🇨🇳 中文 + 当地主语言精简</span>
+                </button>
+                <button data-lang="en" class="lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer flex items-center justify-between">
+                  <span>🇺🇸 English + Local Language</span>
+                </button>
+              </div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2.5 flex items-center justify-between gap-2">
+              <button id="btnDownloadKml" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-[var(--primary)] text-white hover:opacity-90 cursor-pointer">
+                ⬇ 导出四语 KML
+              </button>
+              <button id="btnDownloadCsv" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-85 cursor-pointer">
+                ⬇ 导出四语 CSV
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN SPATIAL WORKSPACE ==================== -->
+  <main class="max-w-7xl mx-auto px-2.5 sm:px-3 pt-2.5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+
+      <!-- ==================== LEFT 7 COLS: INTERACTIVE MAP + FOCUSED PLACE SHEET ==================== -->
+      <div id="mapPaneCol" class="lg:col-span-7 flex flex-col gap-3">
+
+        <!-- Spatial Map Card with Floating Glass Controls -->
+        <div class="relative bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-xs">
+
+          <!-- Floating Top-Left Map Mode Switcher Pills -->
+          <div class="absolute top-2.5 left-2.5 z-20 flex items-center gap-1 bg-[var(--card)]/90 backdrop-blur-md p-1 rounded-xl border border-[var(--border)] shadow-md max-w-[calc(100%-115px)] overflow-x-auto no-scrollbar" id="basemapSwitcher">
+            <button data-bm="gm_road" class="bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer transition">
+              🗺️ 街道
+            </button>
+            <button data-bm="gm_sat" class="bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer transition">
+              🛰️ 卫星
+            </button>
+            <button data-bm="gm_terrain" class="bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer transition">
+              ⛰️ 地形
+            </button>
+            <button data-bm="gm_embed" class="bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer transition">
+              📍 实景卡
+            </button>
+            <button data-bm="vector" class="bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer transition">
+              📐 离线图
+            </button>
+          </div>
+
+          <!-- Floating Top-Right Zoom & Fit Controls -->
+          <div class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1 bg-[var(--card)]/90 backdrop-blur-md p-1 rounded-xl border border-[var(--border)] shadow-md">
+            <button id="btnZoomIn" aria-label="放大地图" class="w-7 h-7 rounded-lg bg-[var(--card)] text-[var(--foreground)] font-extrabold text-sm hover:bg-[var(--content)] flex items-center justify-center cursor-pointer">+</button>
+            <button id="btnZoomOut" aria-label="缩小地图" class="w-7 h-7 rounded-lg bg-[var(--card)] text-[var(--foreground)] font-extrabold text-sm hover:bg-[var(--content)] flex items-center justify-center cursor-pointer">−</button>
+            <button id="btnResetView" aria-label="重置图层视野" class="px-2 h-7 rounded-lg bg-[var(--card)] text-[var(--foreground)] text-xs font-bold hover:bg-[var(--content)] flex items-center justify-center cursor-pointer">全览</button>
+          </div>
+
+          <!-- Map Canvas Viewport -->
+          <div id="mapViewportBox" class="relative w-full h-[265px] sm:h-[340px] lg:h-[400px] select-none overflow-hidden transition-all duration-200" style="background: var(--map-water);">
+            <div id="leafletMap" class="w-full h-full z-10"></div>
+
+            <div id="gmEmbedWrap" class="w-full h-full hidden relative bg-[var(--content)]">
+              <iframe id="gmEmbedIframe" class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+            </div>
+
+            <div id="vectorMapWrap" class="w-full h-full hidden relative">
+              <svg id="mapSvg" viewBox="0 0 800 420" class="w-full h-full cursor-grab active:cursor-grabbing">
+                <defs>
+                  <pattern id="mapGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.6" class="text-[var(--border)] opacity-45" />
+                  </pattern>
+                </defs>
+                <rect width="800" height="420" fill="url(#mapGrid)" />
+                <g id="backdropGroup"></g>
+                <g id="routeGroup"></g>
+                <g id="leaderGroup"></g>
+                <g id="markerGroup"></g>
+              </svg>
+            </div>
+
+            <!-- Floating Bottom Status Bar -->
+            <div class="absolute bottom-2 left-2.5 right-2.5 z-20 flex items-center justify-between gap-2 pointer-events-none">
+              <div class="bg-[var(--card)]/90 backdrop-blur px-2.5 py-0.5 rounded-lg border border-[var(--border)] text-[11px] font-semibold text-[var(--muted-foreground)] shadow-xs truncate">
+                <span id="engineBadge">🟢 Google Maps 实时图层</span>
+              </div>
+              <div id="coordReadout" class="bg-[var(--card)]/90 backdrop-blur px-2.5 py-0.5 rounded-lg border border-[var(--border)] text-[11px] font-mono-code font-bold text-[var(--foreground)] shadow-xs shrink-0">
+                #14
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== FOCUSED ACTIVE PLACE SHEET ==================== -->
+        <div id="detailCard" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3.5 sm:p-4 shadow-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- ==================== RIGHT 5 COLS: SWITCHABLE ITINERARY LIST & AI TRAVEL CHATBOT ==================== -->
+      <div id="rightPaneCol" class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-2xl flex flex-col lg:h-[820px] shadow-xs overflow-hidden">
+
+        <!-- Right Pane Top Switcher: [📍 行程站点 (39)] vs [🤖 AI 随身导游] -->
+        <div class="p-2.5 border-b border-[var(--border)] bg-[var(--content)]/40 flex items-center justify-between gap-2">
+          <div class="flex items-center bg-[var(--content)] p-1 rounded-xl border border-[var(--border)] w-full">
+            <button id="tabBtnList" onclick="switchRightTab('list')" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1.5">
+              <span>📍 行程名录</span>
+              <span id="listCountBadge" class="px-1.5 py-0.2 rounded-full text-[11px] bg-[var(--secondary)] text-[var(--secondary-foreground)] font-mono-code">39</span>
+            </button>
+            <button id="tabBtnAi" onclick="switchRightTab('ai')" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1.5">
+              <span>🤖 AI 随身导游</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold">Ask</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANE A: COMPACT SCANNABLE ITINERARY LIST -->
+        <div id="listSubPane" class="flex-1 flex flex-col min-h-0">
+          <div class="px-3 py-2 border-b border-[var(--border)] flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar bg-[var(--card)]" id="catTabs">
+            <button data-cat="all" class="cat-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">
+              全部 (39)
+            </button>
+            <button data-cat="hotel" class="cat-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 cursor-pointer">
+              <span class="w-2 h-2 rounded-full inline-block" style="background:#d97706"></span> 🏨 酒店 (6)
+            </button>
+            <button data-cat="attraction" class="cat-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 cursor-pointer">
+              <span class="w-2 h-2 rounded-full inline-block" style="background:#059669"></span> 📸 景点 (24)
+            </button>
+            <button data-cat="show" class="cat-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 cursor-pointer">
+              <span class="w-2 h-2 rounded-full inline-block" style="background:#e11d48"></span> 💃 演出 (2)
+            </button>
+            <button data-cat="airport" class="cat-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] flex items-center gap-1 cursor-pointer">
+              <span class="w-2 h-2 rounded-full inline-block" style="background:#2563eb"></span> ✈️ 机场 (7)
+            </button>
+          </div>
+
+          <div id="placeListContainer" class="flex-1 overflow-y-auto divide-y divide-[var(--border)]/70 p-2 space-y-1">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- PANE B: EMBEDDED AI TRAVEL ASSISTANT CHATBOT -->
+        <div id="aiSubPane" class="hidden flex-1 flex flex-col min-h-[520px] lg:min-h-0 bg-[var(--background)]/50">
+          <div class="px-3 py-2 border-b border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-xs font-extrabold text-[var(--foreground)] flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>南美随身 AI 导游 (行程库 + Wiki 实时检索)</span>
+              </div>
+              <div id="aiContextPill" class="text-[11px] text-[var(--muted-foreground)] truncate">
+                当前聚焦：#14 佩里托莫雷诺冰川
+              </div>
+            </div>
+            <button id="btnToggleGeminiKey" class="shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] cursor-pointer" title="可选配置 Gemini API Key 解锁无限自由对话">
+              🔑 <span id="geminiKeyStatusText">Gemini增强</span>
+            </button>
+          </div>
+
+          <!-- Collapsible Optional Gemini API Key Drawer -->
+          <div id="geminiKeyDrawer" class="hidden px-3 py-2.5 bg-[var(--secondary)]/40 border-b border-[var(--border)] space-y-2 text-xs">
+            <div class="font-bold text-[var(--foreground)]">🔑 可选：连接 Gemini 2.5 Flash 实时大模型</div>
+            <p class="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
+              默认已内置<strong>离线行程知识库（全部10趟航班/6家酒店/39个景点/穿搭/防蚊）+ 维基百科实时检索</strong>，无需任何 Key 即可秒回。若输入 Google AI Studio 的 Gemini API Key（仅保存在你手机本地浏览器），可开启无限自由对话：
+            </p>
+            <div class="flex items-center gap-1.5">
+              <input id="geminiApiKeyInput" type="password" placeholder="粘贴 AIzaSy... (仅存本地 localStorage)" class="flex-1 px-2.5 py-1.5 rounded-lg text-xs bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)]" />
+              <button id="btnSaveGeminiKey" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer">保存</button>
+              <button id="btnClearGeminiKey" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] cursor-pointer">清除</button>
+            </div>
+          </div>
+
+          <!-- Context-Aware Quick Question Chips -->
+          <div class="px-3 py-2 border-b border-[var(--border)] bg-[var(--card)]/60">
+            <div class="text-[11px] font-bold text-[var(--muted-foreground)] mb-1.5">💡 点选快捷提问（或直接输入任何问题）：</div>
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5" id="aiQuickPrompts">
+              <button onclick="askAiQuestion('介绍一下当前选中地点的历史背景、看点和当地怎么读')" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">
+                📖 介绍当前地点 &amp; 发音
+              </button>
+              <button onclick="askAiQuestion('今天（D3 10月3日）的完整行程、航班和酒店是什么？')" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                📅 今日行程与航班
+              </button>
+              <button onclick="askAiQuestion('当前地点周边有什么必吃的当地特色美食？怎么用西语或葡语点餐？')" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                🥩 周边美食与点餐发音
+              </button>
+              <button onclick="askAiQuestion('莫雷诺冰川徒步穿什么衣服？有什么禁止穿戴的规定？')" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                🧊 冰川穿搭规定
+              </button>
+              <button onclick="askAiQuestion('列出全程 10 趟航班时间和换机场注意事项（EZE vs AEP）')" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                ✈️ 全程10趟航班核对
+              </button>
+              <button onclick="askAiQuestion('亚马逊雨林防蚊液需要带多少毫升？酒店有牙刷吗？')" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                🦟 亚马逊防蚊 &amp; 酒店牙刷
+              </button>
+            </div>
+          </div>
+
+          <!-- Chat Messages Scroll Container -->
+          <div id="aiChatMessages" class="flex-1 overflow-y-auto p-3 space-y-3"></div>
+
+          <!-- Chat Input Bar -->
+          <form id="aiChatForm" class="p-2.5 border-t border-[var(--border)] bg-[var(--card)] flex items-center gap-2">
+            <input id="aiChatInput" type="text" placeholder="问我任何问题：如「博卡区历史」「伊瓜苏怎么去」「冰川穿什么」..." class="flex-1 px-3 py-2.5 rounded-xl text-sm bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] focus:outline-none focus:border-[var(--primary)]" />
+            <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white hover:opacity-95 transition cursor-pointer shrink-0 touch-target">
+              发送
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== MOBILE BOTTOM NAVIGATION BAR ==================== -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-1.5 flex items-center justify-around shadow-lg">
+    <button data-mview="explore" class="mview-btn flex-1 py-2 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
+      <span>🗺️ 地图与详情</span>
+    </button>
+    <button data-mview="list" class="mview-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--muted-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
+      <span>📋 行程列表</span>
+    </button>
+    <button data-mview="ai" class="mview-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--muted-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
+      <span>🤖 AI 导游</span>
+    </button>
+    <button onclick="openDriverModal(selectedId)" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center gap-1 mx-0.5 cursor-pointer">
+      <span>🚕 问路/口语</span>
+    </button>
+  </nav>
+
+  <!-- ==================== WIKIPEDIA DEEP-READ & CULTURAL STORY MODAL ==================== -->
+  <div id="wikiModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
+        <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+          📖 维基百科深度介绍 · Wikipedia &amp; Cultural Guide
+        </span>
+        <button id="btnCloseWikiModal" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--content)] text-[var(--foreground)] hover:opacity-80 cursor-pointer">
+          ✕ 关闭
+        </button>
+      </div>
+      <div id="wikiModalBody" class="space-y-3.5"></div>
+    </div>
+  </div>
+
+  <!-- ==================== DRIVER FLASHCARD + SURVIVAL PHRASEBOOK MODAL ==================== -->
+  <div id="driverModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[var(--card)] border-2 border-[var(--primary)] rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
+        <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+          🚕 司机问路大字卡 &amp; 旅行生存口语 · Driver Flashcard
+        </span>
+        <button id="btnCloseModal" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--content)] text-[var(--foreground)] hover:opacity-80 cursor-pointer">
+          ✕ 关闭
+        </button>
+      </div>
+      <div id="modalBody" class="space-y-3.5"></div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING PRONUNCIATION LEARNING TOAST ==================== -->
+  <div id="ttsToast" class="fixed bottom-20 lg:bottom-5 left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[92vw] bg-[var(--card)]/95 backdrop-blur-md border-2 border-[var(--primary)] rounded-2xl px-4 py-3 shadow-2xl">
+    <div class="flex items-start justify-between gap-2.5">
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-1.5">
+          <span class="wave-bar text-[var(--primary)]"></span>
+          <span class="wave-bar text-[var(--primary)]"></span>
+          <span class="wave-bar text-[var(--primary)]"></span>
+          <span id="ttsToastMeta" class="text-xs font-extrabold text-[var(--primary)]">正在发音 · Speaking</span>
+        </div>
+        <div id="ttsToastText" class="text-base font-extrabold text-[var(--foreground)] leading-snug mt-1 break-words select-all"></div>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="ttsReplayNormal" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer" title="常速重播 1.0x">🔊 常速</button>
+        <button id="ttsReplaySlow" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 cursor-pointer" title="慢速跟读 0.65x">🐢 慢读</button>
+        <button id="ttsCloseBtn" class="px-2 py-1.5 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--muted-foreground)] cursor-pointer">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== COMPLETE 4-LANGUAGE DATASET (39 PLACES: ZH / EN / ES / PT + WIKIPEDIA) ====================
+    // Country Priority Rule:
+    // - country === "AR" (Argentina, #1–#17): Primary local language is Español (nameEs, es-AR); Secondary is Português (namePt, pt-BR).
+    // - country === "BR" (Brazil, #18–#39): Primary local language is Português (namePt, pt-BR); Secondary is Español (nameEs, es-AR).
+    const PLACES = [
+      // ==================== LAYER 1: BUENOS AIRES (D1-D3, ARGENTINA -> ES PRIORITY) ====================
+      {
+        id: 1,
+        layer: "ba",
+        country: "AR",
+        city: "Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D1 (10/01)",
+        dayNum: [1],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "埃塞萨皮斯塔里尼部长国际机场 (EZE)",
+        nameEn: "Ministro Pistarini International Airport (Ezeiza · EZE)",
+        nameEs: "Aeropuerto Internacional Ministro Pistarini (Ezeiza)",
+        namePt: "Aeroporto Internacional Ministro Pistarini (Ezeiza)",
+        wikiZh: "埃塞萨皮斯塔里尼部长国际机场",
+        wikiEn: "Ministro_Pistarini_International_Airport",
+        wikiLocal: "es:Aeropuerto_Internacional_Ministro_Pistarini",
+        storyZh: "布宜诺斯艾利斯最主要的国际门户机场（代号 EZE），位于西南郊埃塞萨，距市区约 35 公里。注意：布宜有两大机场，国际抵达在 EZE，而 D3 飞往冰川和伊瓜苏的国内航班在市区的乔治·纽伯里机场 (AEP)！",
+        lat: -34.8222,
+        lng: -58.5358,
+        address: "AU Tte. Gral. Pablo Ricchieri Km 33.5, B1802 Ezeiza, Provincia de Buenos Aires, Argentina",
+        hours: "D1 22:26 CM219 抵达 IA 航站楼 | Arrives 22:26 on Copa CM219",
+        note: "⚠️ 国际段抵达机场（距市区约40分钟车程）。切记：D3 飞卡拉法特是从市区的 AEP 机场起飞，千万别走错到 EZE！"
+      },
+      {
+        id: 2,
+        layer: "ba",
+        country: "AR",
+        city: "Palermo, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D1–D3 (10/01–03)",
+        dayNum: [1, 2, 3],
+        cat: "hotel",
+        catZh: "酒店",
+        catEn: "Hotel",
+        nameZh: "布宜诺斯艾利斯达斯勒马球温德姆酒店",
+        nameEn: "Dazzler by Wyndham Buenos Aires Polo",
+        nameEs: "Hotel Dazzler by Wyndham Buenos Aires Polo",
+        namePt: "Hotel Dazzler by Wyndham Buenos Aires Polo",
+        wikiZh: "巴勒莫_(布宜诺斯艾利斯)",
+        wikiEn: "Palermo,_Buenos_Aires",
+        wikiLocal: "es:Palermo_(Buenos_Aires)",
+        storyZh: "酒店坐落于布宜诺斯艾利斯最安全、最时尚的巴勒莫 (Palermo) 街区，紧邻著名的阿根廷皇家马球场 (Campo Argentino de Polo) 与巴勒莫森林公园，步行圈内云集了 Don Julio 等世界顶级炭烤牛排馆。",
+        lat: -34.5746,
+        lng: -58.4239,
+        address: "Sinclair 2929, C1425 Cdad. Autónoma de Buenos Aires (Palermo), Argentina",
+        hours: "连住 2 晚 (10/01–10/03) | 2 Nights Stay",
+        note: "位于安全的 Palermo 富人区，距 AEP 市区机场仅 12 分钟车程。注：南美环保规定酒店通常不提供一次性牙刷牙膏，请自带。"
+      },
+      {
+        id: 3,
+        layer: "ba",
+        country: "AR",
+        city: "Microcentro, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D2 (10/02)",
+        dayNum: [2],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "五月广场 & 玫瑰宫 (总统府)",
+        nameEn: "Plaza de Mayo & Casa Rosada (Presidential Palace)",
+        nameEs: "Plaza de Mayo y Casa Rosada",
+        namePt: "Praça de Maio e Casa Rosada",
+        wikiZh: "玫瑰宫",
+        wikiEn: "Casa_Rosada",
+        wikiLocal: "es:Casa_Rosada",
+        storyZh: "1810 年阿根廷「五月革命」的发源地。东侧粉红色的总统府「玫瑰宫 (Casa Rosada)」融合了意大利文艺复兴与法式风格，1946 年贝隆夫人 (Evita) 就是在二楼阳台上向民众发表演说（《Don't Cry for Me Argentina》实景地）。",
+        lat: -34.6083,
+        lng: -58.3722,
+        address: "Balcarce 50, C1064 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "全天开放（建议游玩 1–2 小时）| Open 24h",
+        note: "布宜历史中心起点，总统府玫瑰宫与主座堂相邻，步行几分钟即可去百年咖啡馆 Café Tortoni。"
+      },
+      {
+        id: 4,
+        layer: "ba",
+        country: "AR",
+        city: "Microcentro, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D2 (10/02)",
+        dayNum: [2],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "布宜诺斯艾利斯主教座堂",
+        nameEn: "Buenos Aires Metropolitan Cathedral",
+        nameEs: "Catedral Metropolitana de Buenos Aires",
+        namePt: "Catedral Metropolitana de Buenos Aires",
+        wikiZh: "布宜诺斯艾利斯主教座堂",
+        wikiEn: "Buenos_Aires_Metropolitan_Cathedral",
+        wikiLocal: "es:Catedral_metropolitana_de_Buenos_Aires",
+        storyZh: "外观酷似古希腊神庙（12 根科林斯石柱象征十二使徒），内部则是宏伟的 18 世纪巴洛克金箔穹顶。这里是已故教宗方济各担任大主教长达 15 年的驻地，右侧礼拜堂安放着南美解放者圣马丁将军的陵墓。",
+        lat: -34.6076,
+        lng: -58.3733,
+        address: "San Martín 27, C1004 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "周一至周五 07:30–18:30；周末 09:00–17:00",
+        note: "免费入内参观，内有阿根廷国父圣马丁将军陵墓（有礼兵守卫），就在五月广场西北角。"
+      },
+      {
+        id: 5,
+        layer: "ba",
+        country: "AR",
+        city: "San Nicolás, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D2 (10/02)",
+        dayNum: [2],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "布宜诺斯艾利斯方尖碑 (七月九日大道)",
+        nameEn: "Obelisco de Buenos Aires (Av. 9 de Julio)",
+        nameEs: "Obelisco de Buenos Aires (Avenida 9 de Julio)",
+        namePt: "Obelisco de Buenos Aires (Avenida 9 de Julho)",
+        wikiZh: "布宜诺斯艾利斯方尖碑",
+        wikiEn: "Obelisco_de_Buenos_Aires",
+        wikiLocal: "es:Obelisco_de_Buenos_Aires",
+        storyZh: "建于 1936 年以纪念布宜建城 400 周年，高 67.5 米，矗立在世界最宽的「七月九日大道 (Av. 9 de Julio)」与科连特斯剧院街交汇处。每逢阿根廷国家队夺冠，这里都是百万人狂欢的心脏。",
+        lat: -34.6037,
+        lng: -58.3816,
+        address: "Av. 9 de Julio s/n, C1043 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "全天开放（地标打卡 30 分钟）| Open 24h",
+        note: "双向 16 车道的世界最宽大道中央，在北侧 BA 巨型绿植字母雕像处拍照角度最佳。"
+      },
+      {
+        id: 6,
+        layer: "ba",
+        country: "AR",
+        city: "La Boca, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D2 (10/02)",
+        dayNum: [2],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "博卡区卡米尼托彩色街",
+        nameEn: "Caminito Street, La Boca",
+        nameEs: "Calle Museo Caminito, La Boca",
+        namePt: "Caminito, Bairro de La Boca",
+        wikiZh: "卡米尼托",
+        wikiEn: "Caminito",
+        wikiLocal: "es:Caminito",
+        storyZh: "19 世纪末意大利热那亚水手与移民聚居的港口街区，船工们用修船剩下的各色船漆涂刷波纹铁皮屋，形成了绚丽的彩色街景。这里是阿根廷探戈的重要发源地，旁边就是马拉多纳曾效力的博卡青年队主场「糖果盒球场 (La Bombonera)」。",
+        lat: -34.6394,
+        lng: -58.3627,
+        address: "Av. Don Pedro de Mendoza 1835, C1169 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "全天开放（⚠️ 强烈建议仅在白天 10:00–17:00 游览）",
+        note: "⚠️ 安全重点：仅在卡米尼托旅游核心街区活动，切勿偏离主街深入周边小巷，拍完照直接叫 Uber 离开。"
+      },
+      {
+        id: 7,
+        layer: "ba",
+        country: "AR",
+        city: "Recoleta, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D2 (10/02)",
+        dayNum: [2],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "雅典人书店 (全球最美剧院书店)",
+        nameEn: "El Ateneo Grand Splendid Bookstore",
+        nameEs: "Librería El Ateneo Grand Splendid",
+        namePt: "Livraria El Ateneo Grand Splendid",
+        wikiZh: "雅典人书店",
+        wikiEn: "El_Ateneo_Grand_Splendid",
+        wikiLocal: "es:El_Ateneo_Grand_Splendid",
+        storyZh: "前身是 1919 年落成的 Grand Splendid 大剧院（探戈传奇歌王 Carlos Gardel 曾在此登台录音）。2000 年改建为书店时完整保留了剧院包厢、红色天鹅绒幕布与意大利画家绘制的和平穹顶壁画，被《国家地理》评为全球最美书店。",
+        lat: -34.5959,
+        lng: -58.3942,
+        address: "Av. Sta. Fe 1860, C1123 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "周一至周六 09:00–21:00；周日 12:00–21:00",
+        note: "原来的剧院主舞台现在是咖啡厅，推荐登上二楼包厢俯拍整个剧院书店全景。"
+      },
+      {
+        id: 8,
+        layer: "ba",
+        country: "AR",
+        city: "San Telmo, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D2 晚 (10/02)",
+        dayNum: [2],
+        cat: "show",
+        catZh: "演出/晚宴",
+        catEn: "Tango Show",
+        nameZh: "老仓库探戈秀 (含三道式晚宴)",
+        nameEn: "El Viejo Almacén Tango Show & Dinner",
+        nameEs: "El Viejo Almacén Casa de Tango",
+        namePt: "El Viejo Almacén Show de Tango",
+        wikiZh: "探戈",
+        wikiEn: "Tango",
+        wikiLocal: "es:El_Viejo_Almacén",
+        storyZh: "坐落于圣特尔莫古董街区 1798 年的殖民时期老建筑内，1969 年由探戈大师 Edmundo Rivero 创立，是布宜历史最悠久、最正统的传统探戈殿堂 (Tango Tradicional)。",
+        lat: -34.6165,
+        lng: -58.3688,
+        address: "Av. Independencia 299, C1099 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "D2 晚 20:00 晚宴 / 22:00 探戈演出 (含接送)",
+        note: "包含阿根廷传统三道式牛排晚宴、马尔贝克红酒与百年老字号探戈演出。"
+      },
+      {
+        id: 9,
+        layer: "ba",
+        country: "AR",
+        city: "Palermo, Buenos Aires",
+        uberAvailable: true,
+        layerZh: "L1 布宜诺斯艾利斯 (D1–D3)",
+        layerEn: "L1 Buenos Aires (D1–D3)",
+        day: "D3 & D5 (10/03 & 05)",
+        dayNum: [3, 5],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "乔治·纽伯里市区机场 (AEP)",
+        nameEn: "Aeroparque Jorge Newbery Airport (AEP)",
+        nameEs: "Aeroparque Internacional Jorge Newbery (AEP)",
+        namePt: "Aeroparque Internacional Jorge Newbery (AEP)",
+        wikiZh: "乔治·纽伯里机场",
+        wikiEn: "Aeroparque_Jorge_Newbery",
+        wikiLocal: "es:Aeroparque_Jorge_Newbery",
+        storyZh: "紧邻拉普拉塔河畔的布宜市区机场（代号 AEP），以阿根廷航空先驱 Jorge Newbery 命名。从 Palermo 酒店打车仅需 10–15 分钟，起降时可俯瞰布宜城市天际线。",
+        lat: -34.5592,
+        lng: -58.4156,
+        address: "Av. Costanera Rafael Obligado s/n, C1425 Cdad. Autónoma de Buenos Aires, Argentina",
+        hours: "D3 11:20 AR1894 飞 FTE | D5 15:30 抵 / 17:40 AR1790 飞 IGR",
+        note: "⚠️ 核心交通节点：距离 Dazzler 酒店仅 12 分钟车程！D3 飞冰川、D5 中转飞伊瓜苏都在此机场。"
+      },
+
+      // ==================== LAYER 2: EL CALAFATE & GLACIER (D3-D5, ARGENTINA -> ES PRIORITY) ====================
+      {
+        id: 10,
+        layer: "calafate",
+        country: "AR",
+        city: "El Calafate",
+        uberAvailable: false,
+        layerZh: "L2 卡拉法特 & 冰川 (D3–D5)",
+        layerEn: "L2 El Calafate & Glacier (D3–D5)",
+        day: "D3 & D5 (10/03 & 05)",
+        dayNum: [3, 5],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "卡拉法特阿曼多·托拉司令国际机场 (FTE)",
+        nameEn: "Comandante Armando Tola International Airport (FTE)",
+        nameEs: "Aeropuerto Internacional Comandante Armando Tola (El Calafate)",
+        namePt: "Aeroporto Internacional Comandante Armando Tola (El Calafate)",
+        wikiZh: "埃尔卡拉法特",
+        wikiEn: "Comandante_Armando_Tola_International_Airport",
+        wikiLocal: "es:Aeropuerto_Internacional_Comandante_Armando_Tola",
+        storyZh: "通往巴塔哥尼亚南部「冰川国家公园」的空中门户，位于阿根廷湖畔，距卡拉法特镇中心约 21 公里。降落前从舷窗可俯瞰牛奶蓝色的阿根廷湖 (Lago Argentino)。",
+        lat: -50.2803,
+        lng: -72.0531,
+        address: "Ruta Provincial 11 Km 52, Z9405 El Calafate, Santa Cruz, Argentina",
+        hours: "D3 14:40 AR1894 抵达 | D5 12:30 AR1897 起飞",
+        note: "距离卡拉法特镇区约 20 分钟车程。注：卡拉法特无 Uber，使用接送专车或酒店叫 Remis 出租车。"
+      },
+      {
+        id: 11,
+        layer: "calafate",
+        country: "AR",
+        city: "El Calafate",
+        uberAvailable: false,
+        layerZh: "L2 卡拉法特 & 冰川 (D3–D5)",
+        layerEn: "L2 El Calafate & Glacier (D3–D5)",
+        day: "D3–D5 (10/03–05)",
+        dayNum: [3, 4, 5],
+        cat: "hotel",
+        catZh: "酒店",
+        catEn: "Hotel",
+        nameZh: "波萨达洛斯阿拉莫斯酒店 (卡拉法特)",
+        nameEn: "Posada Los Álamos Hotel, El Calafate",
+        nameEs: "Hotel Posada Los Álamos",
+        namePt: "Hotel Posada Los Álamos",
+        wikiZh: "埃尔卡拉法特",
+        wikiEn: "El_Calafate",
+        wikiLocal: "es:El_Calafate",
+        storyZh: "卡拉法特镇中心最具巴塔哥尼亚木屋庄园风情的四星级度假酒店，被高大的白杨树 (Álamos) 环绕，步行 3 分钟即可抵达主街解放者大道 (Av. del Libertador) 品尝巴塔哥尼亚炭烤全羊 (Cordero Patagónico)。",
+        lat: -50.3364,
+        lng: -72.2661,
+        address: "Gobernador Moyano 1355, Z9405 El Calafate, Santa Cruz, Argentina",
+        hours: "连住 2 晚 (10/03–10/05) | 2 Nights Stay",
+        note: "位于卡拉法特镇中心核心区，周边有多家地道烤全羊餐厅（如 La Tablita、Mi Viejo）和户外装备店。"
+      },
+      {
+        id: 12,
+        layer: "calafate",
+        country: "AR",
+        city: "El Calafate",
+        uberAvailable: false,
+        layerZh: "L2 卡拉法特 & 冰川 (D3–D5)",
+        layerEn: "L2 El Calafate & Glacier (D3–D5)",
+        day: "D3 下午 (10/03)",
+        dayNum: [3],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "解放者大道 (卡拉法特小镇主街)",
+        nameEn: "Avenida del Libertador (El Calafate Main Street)",
+        nameEs: "Avenida del Libertador General San Martín, El Calafate",
+        namePt: "Avenida del Libertador, El Calafate",
+        wikiZh: "埃尔卡拉法特",
+        wikiEn: "El_Calafate",
+        wikiLocal: "es:El_Calafate",
+        storyZh: "卡拉法特最热闹的商业主街。「Calafate」源自巴塔哥尼亚特有的一种深蓝色小浆果（小檗果），当地古老传说称：「只要吃过一次 Calafate 浆果冰淇淋或果酱，就注定会重返巴塔哥尼亚。」",
+        lat: -50.3379,
+        lng: -72.2647,
+        address: "Av. del Libertador 1000-1400, Z9405 El Calafate, Santa Cruz, Argentina",
+        hours: "全天开放（D3 下午漫步、采购次日冰川午餐）",
+        note: "必试 Acuarela 出品的 Calafate 浆果手工冰淇淋！同时记得在超市买好 D4 冰川徒步自带的便当和饮用水。"
+      },
+      {
+        id: 13,
+        layer: "calafate",
+        country: "AR",
+        city: "El Calafate",
+        uberAvailable: false,
+        layerZh: "L2 卡拉法特 & 冰川 (D3–D5)",
+        layerEn: "L2 El Calafate & Glacier (D3–D5)",
+        day: "D3 下午 (10/03)",
+        dayNum: [3],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "尼梅兹泻湖生态保护区 (火烈鸟保护区)",
+        nameEn: "Laguna Nimez Nature Reserve (Flamingos)",
+        nameEs: "Reserva Ecológica Municipal Laguna Nimez",
+        namePt: "Reserva Ecológica Laguna Nimez",
+        wikiZh: "阿根廷湖",
+        wikiEn: "Argentino_Lake",
+        wikiLocal: "es:Lago_Argentino",
+        storyZh: "紧邻阿根廷湖岸的湿地鸟类保护区，栖息着超过 80 种鸟类，最著名的是粉红色的智利火烈鸟 (Flamenco Austral)、黑颈天鹅与巴塔哥尼亚银鸊鷉，背景即是白雪皑皑的安第斯山脉。",
+        lat: -50.3249,
+        lng: -72.2648,
+        address: "Av. Costanera Presidente Néstor Kirchner, Z9405 El Calafate, Santa Cruz, Argentina",
+        hours: "09:30–19:30",
+        note: "距离 Posada Los Álamos 酒店步行仅 15 分钟，黄昏时分在湖畔木栈道看火烈鸟和日落极美。"
+      },
+      {
+        id: 14,
+        layer: "calafate",
+        country: "AR",
+        city: "Parque Nacional Los Glaciares",
+        uberAvailable: false,
+        layerZh: "L2 卡拉法特 & 冰川 (D3–D5)",
+        layerEn: "L2 El Calafate & Glacier (D3–D5)",
+        day: "D4 全天 (10/04)",
+        dayNum: [4],
+        cat: "attraction",
+        catZh: "核心景点",
+        catEn: "Glacier Trek & Walkways",
+        nameZh: "佩里托莫雷诺冰川 (栈道 & 冰川徒步)",
+        nameEn: "Perito Moreno Glacier (Walkways & Minitrekking)",
+        nameEs: "Glaciar Perito Moreno (Pasarelas y Minitrekking)",
+        namePt: "Glaciar Perito Moreno (Passarelas e Trekking)",
+        wikiZh: "佩里托莫雷诺冰川",
+        wikiEn: "Perito_Moreno_Glacier",
+        wikiLocal: "es:Glaciar_Perito_Moreno",
+        storyZh: "世界自然遗产「冰川国家公园」的皇冠明珠，面积达 250 平方公里（相当于布宜市区大小），冰舌前缘宽 5 公里、高出湖面 70 米。它是地球上极少数仍在保持动态平衡推进的活冰川，现场常能听到震耳欲聋的冰崩轰鸣。",
+        lat: -50.4694,
+        lng: -73.0314,
+        address: "Ruta Provincial 11, Parque Nacional Los Glaciares, Santa Cruz, Argentina",
+        hours: "08:00–18:00（全天游览约 7 小时，含游船与冰爪徒步）",
+        note: "⚠️ Hielo y Aventura 硬性规定：必须穿硬底徒步鞋/运动鞋（严禁雨靴、高跟鞋、Crocs），必带手套、墨镜、防晒霜、防风防水冲锋衣及自带午餐盒！"
+      },
+
+      // ==================== LAYER 3: IGUAZÚ AR & BR (D5-D7, #15-#17 AR->ES, #18-#21 BR->PT) ====================
+      {
+        id: 15,
+        layer: "iguazu",
+        country: "AR",
+        city: "Puerto Iguazú, Argentina",
+        uberAvailable: false,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D5 晚 (10/05)",
+        dayNum: [5],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "阿根廷伊瓜苏大瀑布国际机场 (IGR)",
+        nameEn: "Cataratas del Iguazú International Airport (IGR · Argentina)",
+        nameEs: "Aeropuerto Internacional Cataratas del Iguazú (IGR)",
+        namePt: "Aeroporto Internacional Cataratas del Iguazú (IGR)",
+        wikiZh: "伊瓜苏港",
+        wikiEn: "Cataratas_del_Iguaz%C3%BA_International_Airport",
+        wikiLocal: "es:Aeropuerto_Internacional_Cataratas_del_Iguazú",
+        storyZh: "位于阿根廷米西奥内斯省亚热带雨林中的机场（代号 IGR）。注意：D5 抵达的是阿根廷侧 IGR 机场，随后专车跨境进入巴西侧酒店；而 D7 飞往玛瑙斯是从巴西侧的 IGU 机场起飞！",
+        lat: -25.7373,
+        lng: -54.4734,
+        address: "Ruta Provincial 101, N3370 Puerto Iguazú, Misiones, Argentina",
+        hours: "D5 19:35 AR1790 抵达 | Arrives 19:35",
+        note: "⚠️ 阿根廷侧机场 (IGR)。落地后由专车接机跨境通过 Tancredo Neves 大桥边检前往巴西侧 Bourbon 酒店（请随身备好护照）。"
+      },
+      {
+        id: 16,
+        layer: "iguazu",
+        country: "AR",
+        city: "Puerto Iguazú, Argentina",
+        uberAvailable: false,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D6 全天 (10/06)",
+        dayNum: [6],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "National Park (AR Side)",
+        nameZh: "阿根廷伊瓜苏国家公园 (上/下栈道 & 森林小火车)",
+        nameEn: "Iguazú National Park — Argentine Side",
+        nameEs: "Parque Nacional Iguazú (Lado Argentino)",
+        namePt: "Parque Nacional do Iguaçu (Lado Argentino)",
+        wikiZh: "伊瓜苏国家公园_(阿根廷)",
+        wikiEn: "Iguaz%C3%BA_National_Park",
+        wikiLocal: "es:Parque_nacional_Iguazú",
+        storyZh: "世界三大瀑布中宽度最广的伊瓜苏瀑布，约 80% 的瀑布群位于阿根廷境内。阿根廷侧可深入瀑布之中，分为俯瞰瀑布边缘的「上栈道 (Circuito Superior)」、深入水雾底部的「下栈道 (Circuito Inferior)」及通往恶魔咽喉的森林生态小火车。",
+        lat: -25.6752,
+        lng: -54.4442,
+        address: "Ruta 101 Km 142, N3370 Puerto Iguazú, Misiones, Argentina",
+        hours: "08:00–18:00（建议游玩 5–6 小时）",
+        note: "俗话说「阿根廷侧走入瀑布里，巴西侧饱览全景」。小心园区内的长鼻浣熊 (Coatí) 抢夺食物，切勿投喂！"
+      },
+      {
+        id: 17,
+        layer: "iguazu",
+        country: "AR",
+        city: "Puerto Iguazú, Argentina",
+        uberAvailable: false,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D6 (10/06)",
+        dayNum: [6],
+        cat: "attraction",
+        catZh: "核心奇观",
+        catEn: "Waterfall Viewpoint",
+        nameZh: "恶魔咽喉观景台 (伊瓜苏最壮观核心)",
+        nameEn: "Devil's Throat (Garganta del Diablo)",
+        nameEs: "Garganta del Diablo, Cataratas del Iguazú",
+        namePt: "Garganta do Diabo, Cataratas do Iguaçu",
+        wikiZh: "伊瓜苏瀑布",
+        wikiEn: "Iguazu_Falls",
+        wikiLocal: "es:Garganta_del_Diablo",
+        storyZh: "伊瓜苏 275 道瀑布中最震撼的核心马蹄形大峡谷：高 82 米、宽 150 米、长 700 米，每秒上万立方米的河水从三面倾泻而下，水雾直冲百米高空，彩虹终日不散。",
+        lat: -25.6953,
+        lng: -54.4367,
+        address: "Garganta del Diablo, Parque Nacional Iguazú, Misiones, Argentina",
+        hours: "08:00–16:30（尾班森林小火车约 16:00）",
+        note: "乘生态小火车至终点后沿河面铁栈道步行 1.1 公里直达瀑布正上方，水雾极大，建议备雨衣与手机防水袋。"
+      },
+      {
+        id: 18,
+        layer: "iguazu",
+        country: "BR",
+        city: "Foz do Iguaçu, Brasil",
+        uberAvailable: true,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D5–D7 (10/05–07)",
+        dayNum: [5, 6, 7],
+        cat: "hotel",
+        catZh: "酒店",
+        catEn: "Resort Hotel",
+        nameZh: "伊瓜苏卡塔拉塔斯波旁温泉度假酒店 (巴西侧)",
+        nameEn: "Bourbon Thermas Eco Resort Cataratas do Iguaçu",
+        nameEs: "Bourbon Thermas Eco Resort Cataratas do Iguaçu",
+        namePt: "Bourbon Thermas Eco Resort Cataratas do Iguaçu",
+        wikiZh: "伊瓜苏_(巴西)",
+        wikiEn: "Foz_do_Igua%C3%A7u",
+        wikiLocal: "pt:Foz_do_Iguaçu",
+        storyZh: "注意：从这一站起进入巴西境内，当地官方语言切换为葡萄牙语 (Português)！波旁度假酒店位于通往瀑布的景观大道上，拥有天然温泉泳池、热带花园与巴西烤肉餐厅。",
+        lat: -25.5653,
+        lng: -54.5553,
+        address: "Av. das Cataratas, 2345 - Vila Yolanda, Foz do Iguaçu - PR, 85853-000, Brasil",
+        hours: "连住 2 晚 (10/05–10/07) | 2 Nights Stay",
+        note: "位于巴西伊瓜苏市 (Foz do Iguaçu) 瀑布大道，在巴西侧可以直接使用 Uber 打车！"
+      },
+      {
+        id: 19,
+        layer: "iguazu",
+        country: "BR",
+        city: "Foz do Iguaçu, Brasil",
+        uberAvailable: true,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D7 上午 (10/07)",
+        dayNum: [7],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "National Park (BR Side)",
+        nameZh: "巴西伊瓜苏国家公园 (全景步道 & 观景电梯)",
+        nameEn: "Iguaçu National Park — Brazilian Panoramic Side",
+        nameEs: "Parque Nacional de Iguazú (Lado Brasileño)",
+        namePt: "Parque Nacional do Iguaçu (Cataratas do Iguaçu)",
+        wikiZh: "伊瓜苏国家公园_(巴西)",
+        wikiEn: "Igua%C3%A7u_National_Park",
+        wikiLocal: "pt:Parque_Nacional_do_Iguaçu",
+        storyZh: "联合国教科文组织世界遗产。如果说阿根廷侧是「身在舞台中央」，巴西侧就是「最完美的观众席 VIP 包厢」——沿 1.5 公里悬崖步道缓步下行，可将对面阿根廷侧绵延近 3 公里的数百道瀑布全景尽收眼底。",
+        lat: -25.6867,
+        lng: -54.4408,
+        address: "BR-469, Km 18, Foz do Iguaçu - PR, 85855-750, Brasil",
+        hours: "周一至周五 09:00–16:00；周末 08:30–16:00",
+        note: "终点延伸至瀑布中心的栈桥视野无敌，参观完可乘全景玻璃电梯直达顶层餐厅与大巴站。"
+      },
+      {
+        id: 20,
+        layer: "iguazu",
+        country: "BR",
+        city: "Foz do Iguaçu, Brasil",
+        uberAvailable: true,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D7 上午 (10/07)",
+        dayNum: [7],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Attraction",
+        nameZh: "伊瓜苏鸟园 (巨嘴鸟 & 金刚鹦鹉步入式雨林)",
+        nameEn: "Parque das Aves (Iguaçu Bird Park)",
+        nameEs: "Parque de las Aves, Foz do Iguaçu",
+        namePt: "Parque das Aves",
+        wikiZh: "巨嘴鸟",
+        wikiEn: "Parque_das_Aves",
+        wikiLocal: "pt:Parque_das_Aves",
+        storyZh: "拉丁美洲最大的热带鸟类保护与救助中心，占地 16 公顷大西洋原生雨林。拥有多个巨型步入式生态大网笼，游客可以近在咫尺观察托哥巨嘴鸟 (Tucano)、紫蓝金刚鹦鹉、红鹮和蜂鸟在身边飞翔。",
+        lat: -25.6139,
+        lng: -54.4828,
+        address: "Av. das Cataratas, 12450 - KM 17.1, Foz do Iguaçu - PR, 85859-899, Brasil",
+        hours: "08:30–16:30（建议游玩 1.5–2 小时）",
+        note: "就在巴西伊瓜苏国家公园大门正对面（步行 3 分钟），巨嘴鸟与金刚鹦鹉互动拍照绝佳！"
+      },
+      {
+        id: 21,
+        layer: "iguazu",
+        country: "BR",
+        city: "Foz do Iguaçu, Brasil",
+        uberAvailable: true,
+        layerZh: "L3 伊瓜苏阿/巴两侧 (D5–D7)",
+        layerEn: "L3 Iguazú Falls AR & BR (D5–D7)",
+        day: "D7 下午 (10/07)",
+        dayNum: [7],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "巴西伊瓜苏卡塔拉塔斯国际机场 (IGU)",
+        nameEn: "Foz do Iguaçu / Cataratas International Airport (IGU · Brazil)",
+        nameEs: "Aeropuerto Internacional de Foz do Iguaçu (IGU)",
+        namePt: "Aeroporto Internacional de Foz do Iguaçu / Cataratas (IGU)",
+        wikiZh: "伊瓜苏国际机场",
+        wikiEn: "Foz_do_Igua%C3%A7u_International_Airport",
+        wikiLocal: "pt:Aeroporto_Internacional_de_Foz_do_Iguaçu",
+        storyZh: "巴西侧的伊瓜苏机场（代号 IGU），距离鸟园和巴西国家公园仅 5 分钟车程。从这里搭乘 LATAM 航空经首都巴西利亚 (BSB) 飞往亚马逊雨林心脏玛瑙斯 (MAO)。",
+        lat: -25.6003,
+        lng: -54.485,
+        address: "BR-469, Km 16.5, Foz do Iguaçu - PR, 85853-900, Brasil",
+        hours: "D7 17:15 LA3461 起飞 -> 经巴西利亚 BSB 中转 -> 23:20 抵玛瑙斯 MAO",
+        note: "⚠️ 巴西侧机场 (IGU)，就在鸟园和巴西瀑布公园附近 5 分钟车程，直挂行李经 BSB 飞玛瑙斯。"
+      },
+
+      // ==================== LAYER 4: MANAUS & AMAZON (D7-D10, BRAZIL -> PT PRIORITY) ====================
+      {
+        id: 22,
+        layer: "amazon",
+        country: "BR",
+        city: "Manaus, Amazonas",
+        uberAvailable: true,
+        layerZh: "L4 玛瑙斯 & 亚马逊 (D7–D10)",
+        layerEn: "L4 Manaus & Amazon (D7–D10)",
+        day: "D7 深夜 & D11 凌晨",
+        dayNum: [7, 10, 11],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "玛瑙斯爱德华多·戈梅斯国际机场 (MAO)",
+        nameEn: "Eduardo Gomes International Airport (Manaus · MAO)",
+        nameEs: "Aeropuerto Internacional Eduardo Gomes (Manaus · MAO)",
+        namePt: "Aeroporto Internacional de Manaus - Eduardo Gomes (MAO)",
+        wikiZh: "乌戈·爱德华多·戈梅斯国际机场",
+        wikiEn: "Eduardo_Gomes_International_Airport",
+        wikiLocal: "pt:Aeroporto_Internacional_de_Manaus",
+        storyZh: "巴西亚马逊州首府玛瑙斯的门户机场。请注意时差：玛瑙斯属于亚马逊标准时间 (AMT, UTC-4)，比伊瓜苏、巴西利亚和里约热内卢 (BRT, UTC-3) 慢 1 个小时！",
+        lat: -3.0386,
+        lng: -60.0497,
+        address: "Av. Santos Dumont, 1350 - Tarumã, Manaus - AM, 69041-000, Brasil",
+        hours: "D7 23:20 LA3750 抵达 | D11 01:00 (即 D10 深夜) LA3891 飞里约 GIG",
+        note: "⚠️ 时区提醒：玛瑙斯为 UTC-4（比伊瓜苏/里约慢 1 小时）。D10 晚游览完玛瑙斯市区后前往机场搭 01:00 红眼航班飞里约。"
+      },
+      {
+        id: 23,
+        layer: "amazon",
+        country: "BR",
+        city: "Manaus, Amazonas",
+        uberAvailable: true,
+        layerZh: "L4 玛瑙斯 & 亚马逊 (D7–D10)",
+        layerEn: "L4 Manaus & Amazon (D7–D10)",
+        day: "D7 晚 (10/07)",
+        dayNum: [7, 8],
+        cat: "hotel",
+        catZh: "酒店",
+        catEn: "Hotel",
+        nameZh: "玛瑙斯阿德里亚诺波利斯美居酒店",
+        nameEn: "Mercure Manaus Hotel",
+        nameEs: "Hotel Mercure Manaus",
+        namePt: "Hotel Mercure Manaus",
+        wikiZh: "玛瑙斯",
+        wikiEn: "Manaus",
+        wikiLocal: "pt:Manaus",
+        storyZh: "位于玛瑙斯现代化商务与高档住宅区 Adrianópolis，毗邻 Manauara 购物中心。D7 深夜航班落地后在此休整一晚，D8 早晨退房后可把大件行李箱寄存，轻装乘船深入亚马逊雨林木屋！",
+        lat: -3.1036,
+        lng: -60.0119,
+        address: "Av. Mário Ypiranga, 1000 - Adrianópolis, Manaus - AM, 69057-002, Brasil",
+        hours: "D7 入住 1 晚 (10/07–10/08) | 1 Night Transit Stay",
+        note: "D7 深夜落地休息，D8 早晨出发前往码头乘快艇进入亚马逊雨林生态木屋。"
+      },
+      {
+        id: 24,
+        layer: "amazon",
+        country: "BR",
+        city: "Iranduba / Rio Ariaú, Amazonas",
+        uberAvailable: false,
+        layerZh: "L4 玛瑙斯 & 亚马逊 (D7–D10)",
+        layerEn: "L4 Manaus & Amazon (D7–D10)",
+        day: "D8–D10 (10/08–10)",
+        dayNum: [8, 9, 10],
+        cat: "hotel",
+        catZh: "雨林度假村",
+        catEn: "Amazon Jungle Lodge",
+        nameZh: "亚马逊生态公园丛林木屋度假村",
+        nameEn: "Amazon Ecopark Jungle Lodge",
+        nameEs: "Amazon Ecopark Jungle Lodge",
+        namePt: "Amazon Ecopark Jungle Lodge",
+        wikiZh: "亚马逊雨林",
+        wikiEn: "Amazon_rainforest",
+        wikiLocal: "pt:Floresta_Amazônica",
+        storyZh: "坐落于黑河 (Rio Negro) 支流塔鲁芒河畔的原生雨林保护区内（仅能从玛瑙斯码头乘船约 30 分钟抵达）。包含原始丛林徒步、野生猴子康复中心 (Floresta dos Macacos)、印第安土著部落探访、独木舟钓食人鱼及夜间手电筒寻凯门鳄。",
+        lat: -3.0058,
+        lng: -60.1239,
+        address: "Igarapé do Tarumã, Rio Negro, Manaus - AM, 69000-000, Brasil",
+        hours: "连住 2 晚 (10/08–10/10 全包式雨林探险) | 2 Nights All-Inclusive",
+        note: "⚠️ 防蚊重点：穿浅色薄长袖长裤，裸露皮肤每 4 小时补涂一次 25%–30% DEET 防蚊液（两人3天共需约 110–130ml，先涂防晒再涂防蚊）。"
+      },
+      {
+        id: 25,
+        layer: "amazon",
+        country: "BR",
+        city: "Manaus, Amazonas",
+        uberAvailable: true,
+        layerZh: "L4 玛瑙斯 & 亚马逊 (D7–D10)",
+        layerEn: "L4 Manaus & Amazon (D7–D10)",
+        day: "D8 (10/08)",
+        dayNum: [8],
+        cat: "attraction",
+        catZh: "自然奇观",
+        catEn: "Natural Phenomenon",
+        nameZh: "黑白两河交汇奇观 (内格罗河与索利芒斯河)",
+        nameEn: "Meeting of Waters (Rio Negro & Solimões River)",
+        nameEs: "Encuentro de las Aguas (Río Negro y Río Solimões)",
+        namePt: "Encontro das Águas (Rio Negro e Rio Solimões)",
+        wikiZh: "两河交汇",
+        wikiEn: "Meeting_of_Waters",
+        wikiLocal: "pt:Encontro_das_Águas",
+        storyZh: "世界最著名的水文奇观：深如浓茶的黑河（水温约 28°C、流速 2 km/h、偏酸性且几乎无泥沙）与浑黄如拿铁的索利芒斯河（水温约 22°C、流速 6 km/h、富含安第斯山脉冲刷下的泥沙）在此交汇，因温度、流速和密度差异，两股河水并流长达 6 公里互不融合！",
+        lat: -3.1364,
+        lng: -59.9044,
+        address: "Encontro das Águas, Rio Amazonas, Manaus - AM, Brasil",
+        hours: "乘船游览（还可偶遇亚马逊粉色河豚 Boto-cor-de-rosa）",
+        note: "将手伸入交界线能明显感受到两边水温相差 6°C！从交汇处起，下游才正式被称为「亚马逊河」。"
+      },
+      {
+        id: 26,
+        layer: "amazon",
+        country: "BR",
+        city: "Centro, Manaus",
+        uberAvailable: true,
+        layerZh: "L4 玛瑙斯 & 亚马逊 (D7–D10)",
+        layerEn: "L4 Manaus & Amazon (D7–D10)",
+        day: "D10 下午 (10/10)",
+        dayNum: [10],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Historic Landmark",
+        nameZh: "亚马逊大剧院 & 百年古市场",
+        nameEn: "Amazon Theatre (Teatro Amazonas) & Adolpho Lisboa Market",
+        nameEs: "Teatro Amazonas y Mercado Municipal Adolpho Lisboa",
+        namePt: "Teatro Amazonas e Mercado Municipal Adolpho Lisboa",
+        wikiZh: "亚马逊剧院",
+        wikiEn: "Amazon_Theatre",
+        wikiLocal: "pt:Teatro_Amazonas",
+        storyZh: "1896 年亚马逊「橡胶繁荣期」的奢华巅峰：当时橡胶大亨不惜重金从巴黎运来 3.6 万片代表巴西国旗四色的阿尔萨斯琉璃瓦铺设穹顶，从意大利进口卡拉拉大理石与威尼斯水晶吊灯，在雨林深处建起了一座歌剧殿堂。旁边的古市场则由埃菲尔铁塔设计团队打造。",
+        lat: -3.1303,
+        lng: -60.0234,
+        address: "Largo de São Sebastião - Centro, Manaus - AM, 69067-080, Brasil",
+        hours: "周二至周六 09:00–17:00；周日 09:00–13:00",
+        note: "剧院前的广场黑白波浪石砖正是后来里约科帕卡巴纳海滩步道的设计原型！晚餐必尝烤巨骨舌鱼 (Pirarucu) 或大脂鲤 (Tambaqui)。"
+      },
+
+      // ==================== LAYER 5: RIO DE JANEIRO (D11-D14, BRAZIL -> PT PRIORITY) ====================
+      {
+        id: 27,
+        layer: "rio",
+        country: "BR",
+        city: "Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D11 晨 & D14 晚",
+        dayNum: [11, 14],
+        cat: "airport",
+        catZh: "机场",
+        catEn: "Airport",
+        nameZh: "里约热内卢加利昂国际机场 (GIG)",
+        nameEn: "Rio de Janeiro / Galeão International Airport (GIG)",
+        nameEs: "Aeropuerto Internacional de Río de Janeiro-Galeão (GIG)",
+        namePt: "Aeroporto Internacional Tom Jobim / Galeão (GIG)",
+        wikiZh: "里约热内卢/加利昂-安东尼奥·卡洛斯·若比姆国际机场",
+        wikiEn: "Rio_de_Janeiro/Gale%C3%A3o_International_Airport",
+        wikiLocal: "pt:Aeroporto_Internacional_do_Rio_de_Janeiro-Galeão",
+        storyZh: "全名安东尼奥·卡洛斯·若比姆国际机场（纪念《伊帕内玛女孩》曲作者、Bossa Nova 大师 Tom Jobim），位于瓜纳巴拉湾的总督岛上，距科帕卡巴纳海滩约 35–45 分钟车程。",
+        lat: -22.81,
+        lng: -43.2506,
+        address: "Av. Vinte de Janeiro, s/nº - Ilha do Governador, Rio de Janeiro - RJ, 21941-900, Brasil",
+        hours: "D11 06:10 LA3891 抵达 | D14 21:55 AA7759 飞纽约 JFK",
+        note: "⚠️ D14 返程国际航班建议提前 3.5 小时（18:00 前）抵达 T2 国际航站楼办理值机与离境。"
+      },
+      {
+        id: 28,
+        layer: "rio",
+        country: "BR",
+        city: "Copacabana, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D11–D14 (10/11–14)",
+        dayNum: [11, 12, 13, 14],
+        cat: "hotel",
+        catZh: "海滨酒店",
+        catEn: "Beachfront Hotel",
+        nameZh: "里约温莎勒姆海滨酒店 (科帕卡巴纳)",
+        nameEn: "Windsor Leme Hotel (Copacabana / Leme Beachfront)",
+        nameEs: "Hotel Windsor Leme, Copacabana",
+        namePt: "Windsor Leme Hotel",
+        wikiZh: "科帕卡巴纳_(里约热内卢)",
+        wikiEn: "Leme,_Rio_de_Janeiro",
+        wikiLocal: "pt:Leme_(bairro_do_Rio_de_Janeiro)",
+        storyZh: "正对科帕卡巴纳海滩最东端宁静安全的莱梅 (Leme) 海湾，紧邻莱梅山军事要塞保护区，治安远优于科帕卡巴纳中段，顶层拥有无边海景泳池，可直眺糖面包山。",
+        lat: -22.9628,
+        lng: -43.1669,
+        address: "Av. Atlântica, 656 - Leme, Rio de Janeiro - RJ, 22010-000, Brasil",
+        hours: "连住 3 晚 (10/11–10/14) | 3 Nights Stay",
+        note: "出门过马路即是海滩步道！附近步行可达 Churrascaria Palace 百年烤肉与 Marius Degustare 海鲜烤肉。"
+      },
+      {
+        id: 29,
+        layer: "rio",
+        country: "BR",
+        city: "Copacabana, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D11–D14",
+        dayNum: [11, 12, 13, 14],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Beach",
+        nameZh: "科帕卡巴纳海滩 (4公里黑白波浪步道)",
+        nameEn: "Copacabana Beach & Portuguese Wave Promenade",
+        nameEs: "Playa de Copacabana",
+        namePt: "Praia de Copacabana (Calçadão de Copacabana)",
+        wikiZh: "科帕卡巴纳海滩",
+        wikiEn: "Copacabana,_Rio_de_Janeiro",
+        wikiLocal: "pt:Praia_de_Copacabana",
+        storyZh: "全球最著名的 4 公里新月形黄金海滩，被称为「大西洋小公主 (Princesinha do Mar)」。海滨大道的黑白葡式碎石波浪拼花由景观大师 Roberto Burle Marx 于 1970 年重新设计，买一颗冰镇青椰子 (Água de Coco) 漫步最惬意。",
+        lat: -22.9698,
+        lng: -43.1869,
+        address: "Av. Atlântica - Copacabana, Rio de Janeiro - RJ, Brasil",
+        hours: "全天开放（建议白天及傍晚漫步）",
+        note: "⚠️ 安全提示：去海滩漫步只需带少量现金/卡和手机，切勿佩戴金银首饰或名表，手机拍完照即收回包内。"
+      },
+      {
+        id: 30,
+        layer: "rio",
+        country: "BR",
+        city: "Alto da Boa Vista, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D12 上午 (10/12)",
+        dayNum: [12],
+        cat: "attraction",
+        catZh: "世界新七大奇迹",
+        catEn: "World Wonder",
+        nameZh: "里约救世基督像 (科科瓦多山/耶稣山)",
+        nameEn: "Christ the Redeemer (Corcovado Mountain)",
+        nameEs: "Cristo Redentor (Cerro del Corcovado)",
+        namePt: "Cristo Redentor (Morro do Corcovado)",
+        wikiZh: "里约热内卢基督像",
+        wikiEn: "Christ_the_Redeemer_(statue)",
+        wikiLocal: "pt:Cristo_Redentor",
+        storyZh: "世界新七大奇迹之一，矗立在海拔 710 米的科科瓦多山巅，1931 年落成。雕像高 30 米（基座 8 米）、双臂展开宽 28 米，外层镶嵌着数百万片抗腐蚀的皂石三角马赛克，张开双臂拥抱整个里约山海。",
+        lat: -22.9519,
+        lng: -43.2105,
+        address: "Parque Nacional da Tijuca - Alto da Boa Vista, Rio de Janeiro - RJ, Brasil",
+        hours: "08:00–19:00（乘红色登山齿轮火车或官方环保车登顶）",
+        note: "登山小火车起点站位于 Rua Cosme Velho 513；山顶 360° 俯瞰糖面包山、罗德里戈湖与科帕卡巴纳海湾。"
+      },
+      {
+        id: 31,
+        layer: "rio",
+        country: "BR",
+        city: "Urca, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D12 下午 (10/12)",
+        dayNum: [12],
+        cat: "attraction",
+        catZh: "核心景点",
+        catEn: "Cable Car & Peak",
+        nameZh: "糖面包山 (双段高空全景缆车)",
+        nameEn: "Sugarloaf Mountain & Bondinho Cable Car",
+        nameEs: "Pan de Azúcar (Teleférico Bondinho)",
+        namePt: "Pão de Açúcar (Bondinho do Pão de Açúcar)",
+        wikiZh: "糖面包山",
+        wikiEn: "Sugarloaf_Mountain",
+        wikiLocal: "pt:Pão_de_Açúcar",
+        storyZh: "矗立在瓜纳巴拉湾入口处的 396 米高花岗岩巨峰，因酷似早期精炼甘蔗糖的圆锥形糖块而得名。1912 年开通的「Bondinho」是全球第三座高空缆车（也是 007 电影《太空城》取景地），分两段连接乌尔卡山与糖面包山顶。",
+        lat: -22.9492,
+        lng: -43.1545,
+        address: "Av. Pasteur, 520 - Urca, Rio de Janeiro - RJ, 22290-240, Brasil",
+        hours: "08:30–20:00（日落前 1 小时登顶视野最震撼）",
+        note: "黄昏时分在山顶看夕阳落入耶稣山身后、城市华灯初上，是整个里约最浪漫的机位！"
+      },
+      {
+        id: 32,
+        layer: "rio",
+        country: "BR",
+        city: "Maracanã, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D12 (10/12)",
+        dayNum: [12],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Stadium",
+        nameZh: "马拉卡纳传奇足球场",
+        nameEn: "Maracanã Stadium",
+        nameEs: "Estadio Maracaná",
+        namePt: "Estádio do Maracanã (Estádio Jornalista Mário Filho)",
+        wikiZh: "马拉卡纳体育场",
+        wikiEn: "Maracan%C3%A3_Stadium",
+        wikiLocal: "pt:Estádio_do_Maracanã",
+        storyZh: "世界足球圣殿：为 1950 年世界杯而建（当年决赛曾涌入近 20 万名观众），1969 年球王贝利在此踢进职业生涯第 1000 粒进球，同时也是 2014 年世界杯决赛与 2016 年里约奥运会开闭幕式主场馆。",
+        lat: -22.9121,
+        lng: -43.2302,
+        address: "Av. Pres. Castelo Branco, Portão 3 - Maracanã, Rio de Janeiro - RJ, 20271-130, Brasil",
+        hours: "09:00–16:00（外观或入内参观球星脚印名人堂）",
+        note: "展厅内收藏有贝利、济科、罗纳尔多、内马尔等传奇球星的足印模型与球衣。"
+      },
+      {
+        id: 33,
+        layer: "rio",
+        country: "BR",
+        city: "Centro, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D12 晚 (10/12)",
+        dayNum: [12],
+        cat: "show",
+        catZh: "演出",
+        catEn: "Carnival Samba Show",
+        nameZh: "里约桑巴舞表演 (Ginga Tropical / Roxy)",
+        nameEn: "Rio Samba & Carnival Show (Ginga Tropical)",
+        nameEs: "Show de Samba Brasileño",
+        namePt: "Show de Samba e Carnaval (Ginga Tropical)",
+        wikiZh: "桑巴",
+        wikiEn: "Samba",
+        wikiLocal: "pt:Samba",
+        storyZh: "浓缩巴西多元文化精髓的舞台盛宴：从巴伊亚州的战舞卡波耶拉 (Capoeira)、亚马逊印第安战舞、高乔牧人舞，一路高潮至华丽的里约狂欢节桑巴皇后羽冠盛装巡游。",
+        lat: -22.9094,
+        lng: -43.1825,
+        address: "Centro / Copacabana, Rio de Janeiro - RJ, Brasil",
+        hours: "晚间演出约 20:30–23:00（含专车接送）",
+        note: "演出的最后半小时舞者会邀请观众上台一起学跳桑巴基本步，气氛极其热烈！"
+      },
+      {
+        id: 34,
+        layer: "rio",
+        country: "BR",
+        city: "Lapa / Santa Teresa, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D13 (10/13)",
+        dayNum: [13],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Art Landmark",
+        nameZh: "塞拉隆彩色阶梯 (2000块全球瓷砖)",
+        nameEn: "Escadaria Selarón (Selarón Steps)",
+        nameEs: "Escalera de Selarón",
+        namePt: "Escadaria Selarón",
+        wikiZh: "塞勒隆阶梯",
+        wikiEn: "Escadaria_Selar%C3%B3n",
+        wikiLocal: "pt:Escadaria_Selarón",
+        storyZh: "智利裔艺术家 Jorge Selarón 从 1990 年起耗费 23 年心血，用来自全球 60 多个国家的 2000 多块彩色瓷砖，将连接拉帕 (Lapa) 与圣特雷莎 (Santa Teresa) 的 215 级破旧台阶改造成了献给巴西人民的巨型露天艺术品。",
+        lat: -22.9153,
+        lng: -43.1792,
+        address: "R. Manuel Carneiro - Santa Teresa, Rio de Janeiro - RJ, 20241-120, Brasil",
+        hours: "全天开放（建议上午尽早前往避开人潮）",
+        note: "可以在台阶两侧寻找印有中国长城和北京天安门图案的专属瓷砖！"
+      },
+      {
+        id: 35,
+        layer: "rio",
+        country: "BR",
+        city: "Centro, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D13 (10/13)",
+        dayNum: [13],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Cathedral",
+        nameZh: "里约热内卢天梯大教堂 (圣塞巴斯蒂安大教堂)",
+        nameEn: "Metropolitan Cathedral of Saint Sebastian",
+        nameEs: "Catedral Metropolitana de Río de Janeiro",
+        namePt: "Catedral Metropolitana de São Sebastião",
+        wikiZh: "里约热内卢主教座堂",
+        wikiEn: "Rio_de_Janeiro_Cathedral",
+        wikiLocal: "pt:Catedral_Metropolitana_do_Rio_de_Janeiro",
+        storyZh: "建于 1979 年，由建筑师 Edgar Fonseca 受玛雅金字塔启发设计。高 75 米、底径 106 米的巨型圆锥体内部没有任何一根柱子，四道从地面直通穹顶十字架的 64 米高彩色玻璃花窗如同通往天堂的彩虹天梯。",
+        lat: -22.9108,
+        lng: -43.1806,
+        address: "Av. Chile, 245 - Centro, Rio de Janeiro - RJ, 20031-170, Brasil",
+        hours: "07:00–17:00",
+        note: "距离塞拉隆彩色阶梯仅 600 米，站在教堂正中央仰拍四色天梯穹顶极具科幻感。"
+      },
+      {
+        id: 36,
+        layer: "rio",
+        country: "BR",
+        city: "Jardim Botânico, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D13 (10/13)",
+        dayNum: [13],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Botanical Garden",
+        nameZh: "里约热内卢皇家植物园 (百米帝王棕榈大道)",
+        nameEn: "Rio de Janeiro Botanical Garden",
+        nameEs: "Jardín Botánico de Río de Janeiro",
+        namePt: "Jardim Botânico do Rio de Janeiro",
+        wikiZh: "里约热内卢植物园",
+        wikiEn: "Rio_de_Janeiro_Botanical_Garden",
+        wikiLocal: "pt:Jardim_Botânico_do_Rio_de_Janeiro",
+        storyZh: "1808 年由葡萄牙摄政王若昂六世创立，最初用于引种东方香料。园内最标志性的是由 134 棵高达 30 多米的百年「帝王棕榈 (Palmeira Imperial)」组成的皇家大道，抬头还能望见山顶的救世基督像。",
+        lat: -22.9675,
+        lng: -43.225,
+        address: "R. Jardim Botânico, 1008 - Jardim Botânico, Rio de Janeiro - RJ, 22460-030, Brasil",
+        hours: "周四至周二 08:00–17:00；周三 11:00–17:00",
+        note: "园内还有亚马逊巨型王莲池、兰花温室，经常能看到野生巨嘴鸟和绒猴在树冠跳跃。"
+      },
+      {
+        id: 37,
+        layer: "rio",
+        country: "BR",
+        city: "São Conrado, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D13 选玩 (10/13)",
+        dayNum: [13],
+        cat: "attraction",
+        catZh: "体验",
+        catEn: "Hang Gliding Beach",
+        nameZh: "佩皮诺海滩 (滑翔伞降落海滩)",
+        nameEn: "Pepino Beach (São Conrado Hang Gliding Landing)",
+        nameEs: "Playa de Pepino (Vuelo Libre)",
+        namePt: "Praia do Pepino (Pouso de Asa Delta e Parapente)",
+        wikiZh: "里约热内卢",
+        wikiEn: "S%C3%A3o_Conrado",
+        wikiLocal: "pt:São_Conrado_(bairro_do_Rio_de_Janeiro)",
+        storyZh: "全球最著名的城市山海滑翔胜地：滑翔翼与滑翔伞从蒂茹卡森林海拔 510 米的美丽石跳台 (Pedra Bonita) 跃出，掠过森系海岸与巨型花岗岩加维亚石山，最终降落在洁白松软的佩皮诺沙滩上。",
+        lat: -22.9994,
+        lng: -43.2664,
+        address: "Av. Prefeito Mendes de Morais - São Conrado, Rio de Janeiro - RJ, Brasil",
+        hours: "08:00–17:00（视当日风向与云层高度开放）",
+        note: "即使不亲自飞，坐在海滩边看漫天滑翔翼沿着加维亚巨石盘旋降落也极具视觉冲击力。"
+      },
+      {
+        id: 38,
+        layer: "rio",
+        country: "BR",
+        city: "Centro, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D14 上午 (10/14)",
+        dayNum: [14],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Historic Library",
+        nameZh: "皇家葡萄牙语阅览室 (全球最美图书馆)",
+        nameEn: "Royal Portuguese Cabinet of Reading",
+        nameEs: "Real Gabinete Portugués de Lectura",
+        namePt: "Real Gabinete Português de Leitura",
+        wikiZh: "皇家葡萄牙语阅览室",
+        wikiEn: "Royal_Portuguese_Cabinet_of_Reading",
+        wikiLocal: "pt:Real_Gabinete_Português_de_Leitura",
+        storyZh: "落成于 1887 年，采用繁复瑰丽的葡萄牙「新曼努埃尔式 (Neo-Manuelino)」建筑风格，致敬大航海时代。三层高的雕花木制书架直达彩绘玻璃天窗，藏有 35 万册古籍善本，宛如现实版《哈利·波特》魔法图书馆。",
+        lat: -22.9054,
+        lng: -43.1822,
+        address: "R. Luís de Camões, 30 - Centro, Rio de Janeiro - RJ, 20051-020, Brasil",
+        hours: "⚠️ 周一至周五 10:00–17:00（周六、周日及节假日闭馆！免费入内）",
+        note: "⚠️ D14 (10月14日周三) 是工作日正常开放！参观完可顺道去步行 5 分钟的百年哥伦布咖啡馆 (Confeitaria Colombo) 喝下午茶。"
+      },
+      {
+        id: 39,
+        layer: "rio",
+        country: "BR",
+        city: "Porto Maravilha, Rio de Janeiro",
+        uberAvailable: true,
+        layerZh: "L5 里约热内卢 (D11–D14)",
+        layerEn: "L5 Rio de Janeiro (D11–D14)",
+        day: "D14 下午 (10/14)",
+        dayNum: [14],
+        cat: "attraction",
+        catZh: "景点",
+        catEn: "Museum",
+        nameZh: "明日博物馆 (卡拉特拉瓦科幻建筑)",
+        nameEn: "Museum of Tomorrow (Museu do Amanhã)",
+        nameEs: "Museo del Mañana",
+        namePt: "Museu do Amanhã",
+        wikiZh: "明日博物馆",
+        wikiEn: "Museum_of_Tomorrow",
+        wikiLocal: "pt:Museu_do_Amanhã",
+        storyZh: "2016 年里约奥运老港区复兴计划的核心地标，由西班牙结构主义建筑大师圣地亚哥·卡拉特拉瓦 (Santiago Calatrava) 设计。纯白色的悬臂钢结构灵感源自植物园的凤梨科植物，伸向瓜纳巴拉湾，屋顶太阳能翼板会随太阳角度自动旋转。",
+        lat: -22.894,
+        lng: -43.1794,
+        address: "Praça Mauá, 1 - Centro, Rio de Janeiro - RJ, 20081-240, Brasil",
+        hours: "周二至周日 10:00–18:00（周一闭馆）",
+        note: "博物馆右侧的奥林匹克大道还有吉尼斯纪录认证的巨型街头涂鸦墙《民族 (Etnias)》，非常适合返程前下午游览。"
+      }
+    ];
+
+    // ==================== SURVIVAL TRAVEL PHRASEBOOK (AR SPANISH vs BR PORTUGUESE) ====================
+    const SURVIVAL_PHRASES = {
+      AR: [
+        { zh: "请带我去这个地址", local: "Por favor, ¿me lleva a esta dirección?", lang: "es-AR" },
+        { zh: "请问这个多少钱？", local: "Disculpe, ¿cuánto cuesta esto?", lang: "es-AR" },
+        { zh: "买单，谢谢 (餐厅结账)", local: "La cuenta, por favor. ¡Muchas gracias!", lang: "es-AR" },
+        { zh: "有什么招牌菜/牛排推荐吗？", local: "¿Qué plato o corte de carne me recomienda?", lang: "es-AR" },
+        { zh: "请问洗手间在哪里？", local: "Disculpe, ¿dónde está el baño?", lang: "es-AR" },
+        { zh: "可以刷信用卡吗？", local: "¿Aceptan tarjeta de crédito?", lang: "es-AR" }
+      ],
+      BR: [
+        { zh: "请带我去这个地址", local: "Por favor, pode me levar para este endereço?", lang: "pt-BR" },
+        { zh: "请问这个多少钱？", local: "Com licença, quanto custa isso?", lang: "pt-BR" },
+        { zh: "买单，谢谢 (餐厅结账)", local: "A conta, por favor. Muito obrigado!", lang: "pt-BR" },
+        { zh: "有什么特色菜推荐吗？", local: "Qual prato típico você recomenda?", lang: "pt-BR" },
+        { zh: "请问洗手间在哪里？", local: "Por favor, onde fica o banheiro?", lang: "pt-BR" },
+        { zh: "可以刷信用卡吗 (Crédito)？", local: "Aceita cartão de crédito?", lang: "pt-BR" }
+      ]
+    };
+
+    const CAT_COLORS = {
+      hotel: "#d97706",
+      attraction: "#059669",
+      show: "#e11d48",
+      airport: "#2563eb"
+    };
+
+    // ==================== STATE & SMART DATE DETECTION ====================
+    function detectTodayTripDay() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + 1;
+      const d = now.getDate();
+      if (y === 2026 && m === 10 && d >= 1 && d <= 15) {
+        return d;
+      }
+      return 3;
+    }
+
+    const currentTripDay = detectTodayTripDay();
+    let activeLayer = "all";
+    let activeCat = "all";
+    let activeLang = "smart4";
+    let searchQuery = "";
+    let selectedId = 14;
+    let mapMode = "gm_road";
+    let rightTab = "list";
+    let vecZoom = 1;
+    let vecPanX = 0;
+    let vecPanY = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    let lfMap = null;
+    let lfTileLayer = null;
+    let lfMarkersGroup = null;
+    let lfRouteLine = null;
+    let lfMarkerMap = {};
+    let leafletAvailable = false;
+
+    document.getElementById("todayBadgeLabel").textContent = `D${currentTripDay}`;
+
+    // ==================== COUNTRY-AWARE 4-LANGUAGE HELPERS ====================
+    function getLanguageHierarchy(p) {
+      const esObj = { code: "es", locale: "es-AR", flag: "🇦🇷", tag: "西语 ES", fullTag: "🇦🇷 阿根廷西语 Español", text: p.nameEs };
+      const ptObj = { code: "pt", locale: "pt-BR", flag: "🇧🇷", tag: "葡语 PT", fullTag: "🇧🇷 巴西葡语 Português", text: p.namePt };
+      const zhObj = { code: "zh", locale: "zh-CN", flag: "🇨🇳", tag: "中文 ZH", fullTag: "🇨🇳 中文名称", text: p.nameZh };
+      const enObj = { code: "en", locale: "en-US", flag: "🇺🇸", tag: "英语 EN", fullTag: "🇺🇸 English", text: p.nameEn };
+
+      const primaryLocal = p.country === "BR" ? ptObj : esObj;
+      const secondaryLocal = p.country === "BR" ? esObj : ptObj;
+
+      if (activeLang === "es") {
+        return { primaryLocal: esObj, secondaryLocal: ptObj, zh: zhObj, en: enObj };
+      }
+      if (activeLang === "pt") {
+        return { primaryLocal: ptObj, secondaryLocal: esObj, zh: zhObj, en: enObj };
+      }
+      return { primaryLocal, secondaryLocal, zh: zhObj, en: enObj };
+    }
+
+    function getPrimaryLocalText(p) {
+      return getLanguageHierarchy(p).primaryLocal.text;
+    }
+
+    // ==================== GOOGLE MAPS, UBER & WIKIPEDIA DEEP LINK BUILDERS ====================
+    function getGoogleMapsPlaceUrl(p) {
+      const q = encodeURIComponent(`${getPrimaryLocalText(p)}, ${p.address}`);
+      return `https://www.google.com/maps/search/?api=1&query=${q}`;
+    }
+
+    function getGoogleMapsDirUrl(p) {
+      const dest = encodeURIComponent(`${getPrimaryLocalText(p)}, ${p.address}`);
+      return `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`;
+    }
+
+    function getUberDeepLink(p) {
+      const nick = encodeURIComponent(getPrimaryLocalText(p));
+      const addr = encodeURIComponent(p.address);
+      return `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[latitude]=${p.lat}&dropoff[longitude]=${p.lng}&dropoff[nickname]=${nick}&dropoff[formatted_address]=${addr}`;
+    }
+
+    function getNearbyExploreLinks(p) {
+      const isBR = p.country === "BR";
+      const isCalafate = p.layer === "calafate";
+      const isAmazon = p.layer === "amazon";
+      const items = [
+        {
+          icon: "🥩",
+          labelZh: isCalafate ? "烤全羊/牛排" : (isAmazon ? "亚马逊河鲜" : (isBR ? "巴西烤肉" : "阿根廷牛排")),
+          q: isCalafate
+            ? "Cordero Patagónico Parrilla restaurante"
+            : (isAmazon ? "Restaurante peixe amazônico Tambaqui Pirarucu" : (isBR ? "Churrascaria rodízio frutos do mar" : "Parrilla argentina asado"))
+        },
+        {
+          icon: "🍽️",
+          labelZh: "高分餐厅",
+          q: isBR ? "Melhores restaurantes avaliação alta" : "Mejores restaurantes cerca"
+        },
+        {
+          icon: "☕",
+          labelZh: isBR ? "咖啡/Açaí" : "咖啡/冰淇淋",
+          q: isBR ? "Cafeteria Açaí Gelato" : "Cafetería Heladería artesanal"
+        },
+        {
+          icon: "🛒",
+          labelZh: "超市补水",
+          q: "Supermercado"
+        },
+        {
+          icon: "💊",
+          labelZh: "药店/防蚊",
+          q: "Farmacia"
+        },
+        {
+          icon: "🏧",
+          labelZh: "ATM/换汇",
+          q: isBR ? "Banco24Horas Câmbio" : "Cajero automático Cambio"
+        }
+      ];
+      return items.map(item => ({
+        ...item,
+        url: `https://www.google.com/maps/search/${encodeURIComponent(item.q)}/@${p.lat},${p.lng},15z`
+      }));
+    }
+
+    // ==================== PRONUNCIATION / WEB SPEECH TTS ENGINE ====================
+    let lastTtsPayload = { text: "", lang: "es-AR", label: "" };
+
+    function pickBestVoice(langCode) {
+      if (!("speechSynthesis" in window)) return null;
+      const voices = window.speechSynthesis.getVoices() || [];
+      if (!voices.length) return null;
+      const target = langCode.toLowerCase();
+      const prefix = target.split("-")[0];
+      return (
+        voices.find(v => v.lang && v.lang.toLowerCase().replace("_", "-") === target) ||
+        voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix)) ||
+        null
+      );
+    }
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    }
+
+    window.speakText = function(text, langCode, rate = 0.95, label = "") {
+      lastTtsPayload = { text, lang: langCode, label };
+      const toast = document.getElementById("ttsToast");
+      const metaEl = document.getElementById("ttsToastMeta");
+      const textEl = document.getElementById("ttsToastText");
+
+      let voiceUsed = null;
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = langCode;
+        utter.rate = rate;
+        voiceUsed = pickBestVoice(langCode);
+        if (voiceUsed) utter.voice = voiceUsed;
+        window.speechSynthesis.speak(utter);
+      }
+
+      if (toast && metaEl && textEl) {
+        const speedTag = rate < 0.8 ? "🐢 0.65x 慢速跟读" : "🔊 1.0x 原声朗读";
+        const voiceHint = voiceUsed ? `· ${voiceUsed.lang}` : `· ${langCode}`;
+        metaEl.textContent = `${speedTag} · ${label || langCode} ${voiceHint}`;
+        textEl.textContent = text;
+        toast.classList.remove("hidden");
+      }
+    };
+
+    window.speakPlace = function(id, targetLang, rate = 0.95) {
+      const p = PLACES.find(item => item.id === id) || PLACES[0];
+      const h = getLanguageHierarchy(p);
+      if (targetLang === "primary") {
+        window.speakText(h.primaryLocal.text, h.primaryLocal.locale, rate, `#${p.id} ${h.primaryLocal.fullTag}`);
+      } else if (targetLang === "secondary") {
+        window.speakText(h.secondaryLocal.text, h.secondaryLocal.locale, rate, `#${p.id} ${h.secondaryLocal.fullTag}`);
+      } else if (targetLang === "es") {
+        window.speakText(p.nameEs, "es-AR", rate, `#${p.id} 🇦🇷 西班牙语 Español`);
+      } else if (targetLang === "pt") {
+        window.speakText(p.namePt, "pt-BR", rate, `#${p.id} 🇧🇷 葡萄牙语 Português`);
+      } else if (targetLang === "en") {
+        window.speakText(p.nameEn, "en-US", rate, `#${p.id} 🇺🇸 English`);
+      } else if (targetLang === "zh") {
+        window.speakText(p.nameZh, "zh-CN", rate, `#${p.id} 🇨🇳 中文`);
+      } else if (targetLang === "addr") {
+        const cleanAddr = p.address.replace(/, Argentina/g, "").replace(/, Brasil/g, "");
+        const addrLocale = p.country === "BR" ? "pt-BR" : "es-AR";
+        window.speakText(cleanAddr, addrLocale, rate, `#${p.id} 📍 街道地址 (${p.country === "BR" ? "葡语" : "西语"})`);
+      }
+    };
+
+    document.getElementById("ttsReplayNormal").addEventListener("click", () => {
+      if (lastTtsPayload.text) window.speakText(lastTtsPayload.text, lastTtsPayload.lang, 0.95, lastTtsPayload.label);
+    });
+    document.getElementById("ttsReplaySlow").addEventListener("click", () => {
+      if (lastTtsPayload.text) window.speakText(lastTtsPayload.text, lastTtsPayload.lang, 0.65, lastTtsPayload.label);
+    });
+    document.getElementById("ttsCloseBtn").addEventListener("click", () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      document.getElementById("ttsToast").classList.add("hidden");
+    });
+
+    // ==================== WIKIPEDIA DEEP-READ & LIVE REST FETCHER ====================
+    window.openWikiModal = async function(id, preferredWikiLang = "zh") {
+      const p = PLACES.find(item => item.id === id) || PLACES[0];
+      const h = getLanguageHierarchy(p);
+      const modal = document.getElementById("wikiModal");
+      const body = document.getElementById("wikiModalBody");
+      modal.classList.remove("hidden");
+
+      const [localWikiLang, localWikiSlug] = (p.wikiLocal || "es:Argentina").split(":");
+      const zhWikiUrl = `https://zh.wikipedia.org/wiki/${encodeURIComponent(p.wikiZh)}`;
+      const enWikiUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(p.wikiEn)}`;
+      const localWikiUrl = `https://${localWikiLang}.wikipedia.org/wiki/${encodeURIComponent(localWikiSlug)}`;
+
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div>
+            <div class="flex items-center gap-1.5 flex-wrap mb-1">
+              <span class="px-2 py-0.5 rounded-md text-xs font-extrabold text-white" style="background:${CAT_COLORS[p.cat]}">#${p.id} · ${p.catZh}</span>
+              <span class="px-2 py-0.5 rounded-md text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)]">${p.day}</span>
+              <span class="text-xs text-[var(--muted-foreground)]">${p.city}</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-extrabold text-[var(--foreground)]">${p.nameZh}</h3>
+            <div class="text-xs font-bold text-[var(--primary)] mt-0.5">${h.primaryLocal.flag} ${h.primaryLocal.text} · 🇺🇸 ${p.nameEn}</div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--secondary)]/35 border border-[var(--primary)]/25 space-y-1.5">
+            <div class="text-xs font-extrabold text-[var(--secondary-foreground)]">✨ 随身人文历史导读 (离线可用)：</div>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">${p.storyZh}</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--content)]/60 border border-[var(--border)] space-y-2">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <span class="text-xs font-extrabold text-[var(--foreground)]">🌐 Wikipedia 维基百科实时摘要：</span>
+              <div class="flex items-center gap-1">
+                <button onclick="openWikiModal(${p.id}, 'zh')" class="px-2 py-1 rounded-lg text-[11px] font-bold ${preferredWikiLang === 'zh' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)]'} cursor-pointer">🇨🇳 中文Wiki</button>
+                <button onclick="openWikiModal(${p.id}, 'en')" class="px-2 py-1 rounded-lg text-[11px] font-bold ${preferredWikiLang === 'en' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)]'} cursor-pointer">🇺🇸 EN Wiki</button>
+                <button onclick="openWikiModal(${p.id}, 'local')" class="px-2 py-1 rounded-lg text-[11px] font-bold ${preferredWikiLang === 'local' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)]'} cursor-pointer">${h.primaryLocal.flag} ${localWikiLang.toUpperCase()} Wiki</button>
+              </div>
+            </div>
+            <div id="wikiLiveExtract" class="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">
+              ⏳ 正在从维基百科加载词条摘要...
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <a href="${zhWikiUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white hover:opacity-90 transition">
+                📖 打开中文维基原文 ↗
+              </a>
+              <a href="${enWikiUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-85 transition">
+                🇺🇸 English Wikipedia ↗
+              </a>
+              <a href="${localWikiUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-85 transition">
+                ${h.primaryLocal.flag} ${localWikiLang.toUpperCase()} Wikipedia ↗
+              </a>
+            </div>
+            <button onclick="document.getElementById('wikiModal').classList.add('hidden'); switchRightTab('ai'); askAiQuestion('请详细讲讲「${p.nameZh}」的历史故事、建筑看点和游览建议');" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 text-white cursor-pointer">
+              🤖 问 AI 导游更多细节
+            </button>
+          </div>
+        </div>
+      `;
+
+      try {
+        const langDomain = preferredWikiLang === "en" ? "en" : (preferredWikiLang === "local" ? localWikiLang : "zh");
+        const slug = preferredWikiLang === "en" ? p.wikiEn : (preferredWikiLang === "local" ? localWikiSlug : p.wikiZh);
+        const resp = await fetch(`https://${langDomain}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(slug)}`);
+        if (!resp.ok) throw new Error("Wiki status " + resp.status);
+        const data = await resp.json();
+        const extractEl = document.getElementById("wikiLiveExtract");
+        if (extractEl && data.extract) {
+          const thumbHtml = data.thumbnail?.source
+            ? `<img src="${data.thumbnail.source}" alt="${p.nameZh}" class="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-xl float-right ml-3 mb-2 border border-[var(--border)] shadow-xs" />`
+            : "";
+          extractEl.innerHTML = `
+            <div class="clearfix text-[var(--foreground)]">
+              ${thumbHtml}
+              <div class="font-bold text-xs text-[var(--primary)] mb-1">词条：${data.title}</div>
+              <p class="text-xs sm:text-sm leading-relaxed">${data.extract}</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        const extractEl = document.getElementById("wikiLiveExtract");
+        if (extractEl) {
+          extractEl.innerHTML = `<span class="text-xs text-[var(--muted-foreground)]">当前处于离线或受限网络环境，已展示上方内置人文导读；你也可以直接点击下方按钮在新标签页打开 Wikipedia 原文。</span>`;
+        }
+      }
+    };
+
+    document.getElementById("btnCloseWikiModal").addEventListener("click", () => {
+      document.getElementById("wikiModal").classList.add("hidden");
+    });
+    document.getElementById("wikiModal").addEventListener("click", (e) => {
+      if (e.target.id === "wikiModal") document.getElementById("wikiModal").classList.add("hidden");
+    });
+
+    // ==================== FILTERING LOGIC ====================
+    function getFilteredPlaces() {
+      return PLACES.filter(p => {
+        if (activeLayer === "today") {
+          if (!p.dayNum.includes(currentTripDay)) return false;
+        } else if (activeLayer !== "all" && p.layer !== activeLayer) {
+          return false;
+        }
+        if (activeCat !== "all" && p.cat !== activeCat) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const hay = `${p.id} ${p.nameZh} ${p.nameEn} ${p.nameEs} ${p.namePt} ${p.day} ${p.address} ${p.note} ${p.storyZh} ${p.city}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    window.resetFiltersAndSearchAll = function(keepQuery = true) {
+      activeLayer = "all";
+      activeCat = "all";
+      if (!keepQuery) {
+        searchQuery = "";
+        document.getElementById("searchInput").value = "";
+      }
+      syncFilterButtonsUi();
+      renderMap(true);
+      renderDetailCard();
+      renderPlaceList();
+    };
+
+    function syncFilterButtonsUi() {
+      document.querySelectorAll(".layer-btn").forEach(b => {
+        const layer = b.getAttribute("data-layer");
+        const active = layer === activeLayer;
+        if (layer === "today") {
+          b.className = active
+            ? "layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-amber-500 text-white transition cursor-pointer flex items-center gap-1 shadow-xs"
+            : "layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition cursor-pointer flex items-center gap-1";
+        } else {
+          b.className = active
+            ? "layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-[var(--primary-foreground)] transition cursor-pointer shadow-xs"
+            : "layer-btn shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] transition cursor-pointer";
+        }
+      });
+
+      document.querySelectorAll(".cat-btn").forEach(b => {
+        const active = b.getAttribute("data-cat") === activeCat;
+        if (active) {
+          b.classList.add("bg-[var(--secondary)]", "text-[var(--secondary-foreground)]", "font-extrabold");
+          b.classList.remove("text-[var(--muted-foreground)]", "font-semibold");
+        } else {
+          b.classList.remove("bg-[var(--secondary)]", "text-[var(--secondary-foreground)]", "font-extrabold");
+          b.classList.add("text-[var(--muted-foreground)]", "font-semibold");
+        }
+      });
+    }
+
+    // ==================== GOOGLE MAPS TILE ENGINE (LEAFLET) + EMBED + VECTOR FALLBACK ====================
+    function getGoogleTileUrl(mode) {
+      const hl = activeLang === "en" ? "en" : (activeLang === "es" ? "es" : (activeLang === "pt" ? "pt-BR" : "zh-CN"));
+      if (mode === "gm_sat") return `https://mt1.google.com/vt/lyrs=y&hl=${hl}&x={x}&y={y}&z={z}`;
+      if (mode === "gm_terrain") return `https://mt1.google.com/vt/lyrs=p&hl=${hl}&x={x}&y={y}&z={z}`;
+      return `https://mt1.google.com/vt/lyrs=m&hl=${hl}&x={x}&y={y}&z={z}`;
+    }
+
+    function initLeafletIfAvailable() {
+      if (typeof window.L === "undefined") {
+        leafletAvailable = false;
+        setMapMode("vector", true);
+        return;
+      }
+      try {
+        leafletAvailable = true;
+        lfMap = L.map("leafletMap", {
+          zoomControl: false,
+          attributionControl: true
+        }).setView([-25.68, -54.45], 4);
+
+        lfTileLayer = L.tileLayer(getGoogleTileUrl("gm_road"), {
+          maxZoom: 20,
+          attribution: "Map data &copy;2026 Google"
+        }).addTo(lfMap);
+
+        let tileErrCount = 0;
+        lfTileLayer.on("tileerror", () => {
+          tileErrCount++;
+          if (tileErrCount >= 4 && mapMode.startsWith("gm_") && mapMode !== "gm_embed") {
+            document.getElementById("engineBadge").textContent = "📐 离线防重叠矢量图 (无网/沙盒自动切换)";
+            setMapMode("vector", true);
+          }
+        });
+
+        lfMarkersGroup = L.layerGroup().addTo(lfMap);
+      } catch (e) {
+        leafletAvailable = false;
+        setMapMode("vector", true);
+      }
+    }
+
+    function updateGoogleEmbedIframe() {
+      const p = PLACES.find(item => item.id === selectedId) || PLACES[0];
+      const hl = activeLang === "en" ? "en" : (activeLang === "es" ? "es" : (activeLang === "pt" ? "pt-BR" : "zh-CN"));
+      const q = encodeURIComponent(`${getPrimaryLocalText(p)}, ${p.address}`);
+      const zoom = (activeLayer === "all") ? 14 : 16;
+      const iframe = document.getElementById("gmEmbedIframe");
+      const targetSrc = `https://www.google.com/maps?q=${q}&hl=${hl}&z=${zoom}&output=embed`;
+      if (iframe.getAttribute("src") !== targetSrc) {
+        iframe.setAttribute("src", targetSrc);
+      }
+    }
+
+    function setMapMode(mode, isAutoFallback = false) {
+      mapMode = mode;
+      document.querySelectorAll(".bm-btn").forEach(btn => {
+        const active = btn.getAttribute("data-bm") === mode;
+        btn.className = active
+          ? "bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer transition"
+          : "bm-btn shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer transition";
+      });
+
+      const lfEl = document.getElementById("leafletMap");
+      const embEl = document.getElementById("gmEmbedWrap");
+      const vecEl = document.getElementById("vectorMapWrap");
+      const badge = document.getElementById("engineBadge");
+
+      if (mode === "gm_embed") {
+        lfEl.classList.add("hidden");
+        vecEl.classList.add("hidden");
+        embEl.classList.remove("hidden");
+        badge.textContent = "📍 Google Maps 官方地点实景窗";
+        updateGoogleEmbedIframe();
+      } else if (mode === "vector" || !leafletAvailable) {
+        lfEl.classList.add("hidden");
+        embEl.classList.add("hidden");
+        vecEl.classList.remove("hidden");
+        badge.textContent = isAutoFallback
+          ? "📐 离线矢量模式 (离线/沙盒自动激活)"
+          : "📐 离线防重叠智能矢量地图";
+        renderVectorMap();
+      } else {
+        embEl.classList.add("hidden");
+        vecEl.classList.add("hidden");
+        lfEl.classList.remove("hidden");
+        if (lfTileLayer) lfTileLayer.setUrl(getGoogleTileUrl(mode));
+        const modeLabel = mode === "gm_sat" ? "Google 卫星混合图" : (mode === "gm_terrain" ? "Google 地形图" : "Google 街道地图");
+        badge.textContent = `🟢 ${modeLabel} (点击气泡听发音/导览)`;
+        if (lfMap) {
+          setTimeout(() => {
+            lfMap.invalidateSize();
+            renderLeafletMap(false);
+          }, 50);
+        }
+      }
+    }
+
+    function renderLeafletMap(fitBounds = true) {
+      if (!leafletAvailable || !lfMap || !lfMarkersGroup) return;
+      lfMarkersGroup.clearLayers();
+      lfMarkerMap = {};
+      if (lfRouteLine) {
+        lfMap.removeLayer(lfRouteLine);
+        lfRouteLine = null;
+      }
+
+      const filtered = getFilteredPlaces();
+      const layerPlaces = activeLayer === "all"
+        ? PLACES
+        : (activeLayer === "today" ? PLACES.filter(p => p.dayNum.includes(currentTripDay)) : PLACES.filter(p => p.layer === activeLayer));
+
+      if (layerPlaces.length > 1) {
+        const latlngs = layerPlaces.map(p => [p.lat, p.lng]);
+        lfRouteLine = L.polyline(latlngs, {
+          color: "#0284c7",
+          weight: 3,
+          opacity: 0.72,
+          dashArray: "6, 6"
+        }).addTo(lfMap);
+      }
+
+      filtered.forEach(p => {
+        const isSelected = p.id === selectedId;
+        const color = CAT_COLORS[p.cat] || "#059669";
+        const size = isSelected ? 30 : 24;
+        const h = getLanguageHierarchy(p);
+        const icon = L.divIcon({
+          className: "",
+          html: `<div class="gm-pin-wrap ${isSelected ? 'selected' : ''}" style="width:${size}px;height:${size}px;background:${color};">${p.id}</div>`,
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+          popupAnchor: [0, -size / 2]
+        });
+
+        const marker = L.marker([p.lat, p.lng], {
+          icon,
+          zIndexOffset: isSelected ? 900 : 100
+        });
+
+        const uberPopupBtn = p.uberAvailable
+          ? `<a href="${getUberDeepLink(p)}" target="_blank" rel="noopener noreferrer" style="background:#111827;color:#fff;padding:5px 9px;border-radius:8px;text-decoration:none;font-weight:700;font-size:11px;">🚗 Uber</a>`
+          : "";
+
+        const popupHtml = `
+          <div style="min-width:225px;max-width:270px;line-height:1.4;">
+            <div style="font-size:11px;font-weight:800;color:${color};margin-bottom:2px;">#${p.id} · ${p.day} · ${p.catZh}</div>
+            <div style="font-size:13.5px;font-weight:800;margin-bottom:2px;">🇨🇳 ${p.nameZh}</div>
+            <div style="font-size:12.5px;font-weight:800;color:#0284c7;margin-bottom:2px;">${h.primaryLocal.flag} ${h.primaryLocal.text}</div>
+            <div style="font-size:11px;opacity:0.78;margin-bottom:6px;">${h.secondaryLocal.flag} ${h.secondaryLocal.text}</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">
+              <button onclick="speakPlace(${p.id}, 'primary', 0.95)" style="background:#0284c7;color:#fff;padding:4px 8px;border-radius:7px;border:none;font-weight:800;font-size:11px;cursor:pointer;">🔊 读${h.primaryLocal.tag}</button>
+              <button onclick="speakPlace(${p.id}, 'primary', 0.65)" style="background:#f59e0b;color:#fff;padding:4px 8px;border-radius:7px;border:none;font-weight:800;font-size:11px;cursor:pointer;">🐢 慢读</button>
+              <button onclick="openWikiModal(${p.id})" style="background:#059669;color:#fff;padding:4px 8px;border-radius:7px;border:none;font-weight:800;font-size:11px;cursor:pointer;">📖 Wiki</button>
+            </div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <a href="${getGoogleMapsDirUrl(p)}" target="_blank" rel="noopener noreferrer" style="background:#2563eb;color:#fff;padding:5px 9px;border-radius:8px;text-decoration:none;font-weight:700;font-size:11px;">📍 导航</a>
+              ${uberPopupBtn}
+              <button onclick="openDriverModal(${p.id})" style="background:#e2e8f0;color:#0f172a;padding:5px 9px;border-radius:8px;border:none;font-weight:700;font-size:11px;cursor:pointer;">🚕 问路卡</button>
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupHtml, { closeButton: true });
+        marker.on("click", () => {
+          selectPlace(p.id, true, false);
+        });
+
+        marker.addTo(lfMarkersGroup);
+        lfMarkerMap[p.id] = marker;
+      });
+
+      if (fitBounds && filtered.length > 0) {
+        const bounds = L.latLngBounds(filtered.map(p => [p.lat, p.lng]));
+        lfMap.fitBounds(bounds, { padding: [36, 36], maxZoom: 15 });
+      }
+    }
+
+    // ==================== OFFLINE COLLISION-FREE VECTOR MAP ====================
+    const SA_OUTLINE = [
+      [-12, -77], [-5, -81], [1, -79], [8, -77], [11, -74], [10, -62],
+      [6, -52], [1, -50], [-2, -44], [-6, -35], [-13, -38], [-20, -40],
+      [-23, -43], [-26, -48], [-33, -52], [-35, -58], [-41, -63],
+      [-47, -66], [-52, -69], [-55, -67], [-54, -72], [-48, -75],
+      [-40, -73], [-30, -71], [-18, -71], [-12, -77]
+    ];
+
+    function computeVectorProjection(points) {
+      const W = 800, H = 420, padX = 64, padY = 46;
+      const pts = points.length > 0 ? points : PLACES;
+      let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+      pts.forEach(p => {
+        if (p.lat < minLat) minLat = p.lat;
+        if (p.lat > maxLat) maxLat = p.lat;
+        if (p.lng < minLng) minLng = p.lng;
+        if (p.lng > maxLng) maxLng = p.lng;
+      });
+      if (activeLayer === "all") {
+        minLat = Math.min(minLat, -55);
+        maxLat = Math.max(maxLat, 5);
+        minLng = Math.min(minLng, -78);
+        maxLng = Math.max(maxLng, -35);
+      } else {
+        const latSpan = Math.max(maxLat - minLat, 0.015);
+        const lngSpan = Math.max(maxLng - minLng, 0.015);
+        minLat -= latSpan * 0.22;
+        maxLat += latSpan * 0.22;
+        minLng -= lngSpan * 0.22;
+        maxLng += lngSpan * 0.22;
+      }
+      const midLat = ((minLat + maxLat) / 2) * (Math.PI / 180);
+      const cosLat = Math.max(Math.cos(midLat), 0.35);
+      const worldW = (maxLng - minLng) * cosLat;
+      const worldH = (maxLat - minLat);
+      const baseScale = Math.min((W - 2 * padX) / worldW, (H - 2 * padY) / worldH);
+      const scale = baseScale * vecZoom;
+      const cx = (minLng + maxLng) / 2;
+      const cy = (minLat + maxLat) / 2;
+      return {
+        project(lat, lng) {
+          const x = W / 2 + (lng - cx) * cosLat * scale + vecPanX;
+          const y = H / 2 - (lat - cy) * scale + vecPanY;
+          return [x, y];
+        }
+      };
+    }
+
+    function renderVectorMap() {
+      const backdropGroup = document.getElementById("backdropGroup");
+      const routeGroup = document.getElementById("routeGroup");
+      const leaderGroup = document.getElementById("leaderGroup");
+      const markerGroup = document.getElementById("markerGroup");
+      backdropGroup.innerHTML = "";
+      routeGroup.innerHTML = "";
+      leaderGroup.innerHTML = "";
+      markerGroup.innerHTML = "";
+
+      const layerPlaces = activeLayer === "all"
+        ? PLACES
+        : (activeLayer === "today" ? PLACES.filter(p => p.dayNum.includes(currentTripDay)) : PLACES.filter(p => p.layer === activeLayer));
+      const filtered = getFilteredPlaces();
+      const proj = computeVectorProjection(layerPlaces);
+
+      if (activeLayer === "all") {
+        const polyPts = SA_OUTLINE.map(([lat, lng]) => proj.project(lat, lng).join(",")).join(" ");
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("points", polyPts);
+        poly.setAttribute("fill", "var(--map-land)");
+        poly.setAttribute("stroke", "var(--map-land-stroke)");
+        poly.setAttribute("stroke-width", "1.6");
+        backdropGroup.appendChild(poly);
+      }
+
+      const routePts = layerPlaces.map(p => proj.project(p.lat, p.lng));
+      if (routePts.length > 1) {
+        const dStr = routePts.map((pt, i) => `${i === 0 ? "M" : "L"} ${pt[0].toFixed(1)} ${pt[1].toFixed(1)}`).join(" ");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", dStr);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#0284c7");
+        path.setAttribute("stroke-width", "2.2");
+        path.setAttribute("stroke-dasharray", "6,5");
+        path.setAttribute("opacity", "0.75");
+        routeGroup.appendChild(path);
+      }
+
+      filtered.forEach(p => {
+        const [x, y] = proj.project(p.lat, p.lng);
+        const isSelected = p.id === selectedId;
+        const color = CAT_COLORS[p.cat] || "#059669";
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "pin-group");
+        g.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
+
+        if (isSelected) {
+          const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          pulse.setAttribute("r", "15");
+          pulse.setAttribute("fill", "none");
+          pulse.setAttribute("stroke", color);
+          pulse.setAttribute("stroke-width", "2.5");
+          pulse.setAttribute("class", "pin-pulse");
+          g.appendChild(pulse);
+        }
+
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("r", isSelected ? "11.5" : "9.5");
+        circle.setAttribute("fill", color);
+        circle.setAttribute("stroke", "#ffffff");
+        circle.setAttribute("stroke-width", isSelected ? "2.5" : "1.8");
+        g.appendChild(circle);
+
+        const num = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        num.setAttribute("y", "3.8");
+        num.setAttribute("text-anchor", "middle");
+        num.setAttribute("fill", "#ffffff");
+        num.setAttribute("font-size", "10.5");
+        num.setAttribute("font-weight", "700");
+        num.textContent = p.id;
+        g.appendChild(num);
+
+        if (activeLayer !== "all" || isSelected) {
+          const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          lbl.setAttribute("x", "14");
+          lbl.setAttribute("y", "4");
+          lbl.setAttribute("font-size", isSelected ? "12" : "11");
+          lbl.setAttribute("font-weight", isSelected ? "800" : "600");
+          lbl.setAttribute("fill", "currentColor");
+          lbl.setAttribute("paint-order", "stroke");
+          lbl.setAttribute("stroke", "var(--card)");
+          lbl.setAttribute("stroke-width", "3.5");
+          lbl.setAttribute("class", "text-[var(--foreground)]");
+          lbl.textContent = `#${p.id} ${p.nameZh.split(" ")[0]}`;
+          g.appendChild(lbl);
+        }
+
+        g.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectPlace(p.id, true, false);
+        });
+        markerGroup.appendChild(g);
+      });
+    }
+
+    // ==================== RENDER FOCUSED ACTIVE PLACE SHEET ====================
+    window.stepPlace = function(delta) {
+      const filtered = getFilteredPlaces();
+      const list = filtered.length > 0 ? filtered : PLACES;
+      const idx = list.findIndex(p => p.id === selectedId);
+      const nextIdx = (idx + delta + list.length) % list.length;
+      selectPlace(list[nextIdx].id, true, true);
+    };
+
+    function renderDetailCard() {
+      const p = PLACES.find(item => item.id === selectedId) || PLACES[0];
+      const color = CAT_COLORS[p.cat] || "#059669";
+      const hasWarning = p.note.includes("⚠️");
+      const h = getLanguageHierarchy(p);
+      const exploreLinks = getNearbyExploreLinks(p);
+
+      document.getElementById("coordReadout").textContent = `#${p.id} (${p.lat.toFixed(3)}, ${p.lng.toFixed(3)})`;
+      const aiPill = document.getElementById("aiContextPill");
+      if (aiPill) aiPill.textContent = `当前聚焦：#${p.id} ${p.nameZh} (${p.city})`;
+
+      const uberBtnHtml = p.uberAvailable
+        ? `<a href="${getUberDeepLink(p)}" target="_blank" rel="noopener noreferrer" class="touch-target flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-extrabold bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 transition shadow-xs">
+             <span>🚗 一键 Uber</span>
+           </a>`
+        : `<button onclick="openDriverModal(${p.id})" class="touch-target flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 cursor-pointer" title="该地区无 Uber，请出示问路卡让酒店叫出租车/Remis">
+             <span>🚕 无Uber·叫车卡</span>
+           </button>`;
+
+      document.getElementById("detailCard").innerHTML = `
+        <div class="space-y-3.5">
+
+          <!-- Top Header: Category/Day Badges + Prev/Next Chronological Stepper -->
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-lg text-xs font-extrabold text-white" style="background:${color}">#${p.id} · ${p.catZh}</span>
+              <span class="px-2.5 py-0.5 rounded-lg text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)]">${p.day}</span>
+              <span class="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-[var(--content)] text-[var(--muted-foreground)]">${p.country === "BR" ? "🇧🇷 巴西 · 葡语优先" : "🇦🇷 阿根廷 · 西语优先"}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="stepPlace(-1)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] cursor-pointer">‹ 上一站</button>
+              <button onclick="stepPlace(1)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] cursor-pointer">下一站 ›</button>
+            </div>
+          </div>
+
+          <!-- 4-LANGUAGE TACTILE PRONUNCIATION CARD (Country-Primary Local Language Highlighted!) -->
+          <div class="rounded-2xl border border-[var(--border)] bg-[var(--content)]/40 overflow-hidden divide-y divide-[var(--border)]/70">
+
+            <!-- 1. PRIMARY LOCAL LANGUAGE (🇦🇷 Español in Argentina / 🇧🇷 Português in Brazil) -->
+            <div onclick="speakPlace(${p.id}, 'primary', 0.95)" class="p-3 bg-[var(--secondary)]/35 hover:bg-[var(--secondary)]/55 transition cursor-pointer flex items-center justify-between gap-2.5">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-[var(--secondary-foreground)]">${h.primaryLocal.fullTag} (点击整行直接发音)</span>
+                </div>
+                <div class="text-base sm:text-lg font-extrabold text-[var(--primary)] leading-snug mt-0.5 select-all">${h.primaryLocal.text}</div>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
+                <button onclick="speakPlace(${p.id}, 'primary', 0.95)" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white shadow-2xs cursor-pointer">
+                  🔊 ${h.primaryLocal.tag}
+                </button>
+                <button onclick="speakPlace(${p.id}, 'primary', 0.65)" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 cursor-pointer" title="0.65x 慢速跟读学习">
+                  🐢 慢读
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. CHINESE TITLE + QUICK SPEAK -->
+            <div class="px-3 py-2.5 flex items-center justify-between gap-2">
+              <div class="text-base font-extrabold text-[var(--foreground)] leading-snug">🇨🇳 ${p.nameZh}</div>
+              <button onclick="speakPlace(${p.id}, 'zh', 0.95)" class="px-2 py-1 rounded-lg text-xs font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] cursor-pointer shrink-0">
+                🔊 中文
+              </button>
+            </div>
+
+            <!-- 3. ENGLISH & SECONDARY LOCAL LANGUAGE (🇧🇷 PT in AR / 🇦🇷 ES in BR) -->
+            <div class="px-3 py-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-[var(--card)]/50">
+              <div class="flex items-center justify-between gap-1.5">
+                <span class="font-semibold text-[var(--muted-foreground)] truncate">🇺🇸 <strong class="text-[var(--foreground)]">${p.nameEn}</strong></span>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="speakPlace(${p.id}, 'en', 0.95)" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">🔊 EN</button>
+                  <button onclick="speakPlace(${p.id}, 'en', 0.65)" class="px-1.5 py-0.5 rounded-md text-[11px] font-bold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] cursor-pointer" title="慢读英语">🐢</button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-1.5 sm:border-l sm:border-[var(--border)] sm:pl-2">
+                <span class="font-semibold text-[var(--muted-foreground)] truncate">${h.secondaryLocal.flag} <strong class="text-[var(--foreground)]">${h.secondaryLocal.text}</strong></span>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="speakPlace(${p.id}, 'secondary', 0.95)" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">🔊 ${h.secondaryLocal.tag}</button>
+                  <button onclick="speakPlace(${p.id}, 'secondary', 0.65)" class="px-1.5 py-0.5 rounded-md text-[11px] font-bold bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] cursor-pointer" title="慢读">🐢</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRIMARY 44px THUMB-ZONE ACTION DOCK -->
+          <div class="flex flex-wrap items-center gap-2">
+            <a href="${getGoogleMapsDirUrl(p)}" target="_blank" rel="noopener noreferrer" class="touch-target flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white hover:opacity-95 transition shadow-xs">
+              <span>📍 Google 导航</span>
+            </a>
+            ${uberBtnHtml}
+            <button onclick="openDriverModal(${p.id})" class="touch-target flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90 transition cursor-pointer">
+              <span>🚕 司机问路卡</span>
+            </button>
+            <button onclick="openWikiModal(${p.id})" class="touch-target inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-600/25 transition cursor-pointer">
+              <span>📖 Wiki 百科</span>
+            </button>
+            <button onclick="switchRightTab('ai'); askAiQuestion('请给我讲讲「${p.nameZh}」的历史看点、游玩攻略和注意事项');" class="touch-target inline-flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] transition cursor-pointer">
+              <span>🤖 问 AI</span>
+            </button>
+          </div>
+
+          <!-- Cultural Story Preview + Address + Schedule -->
+          <div class="p-3 rounded-xl bg-[var(--content)]/45 border border-[var(--border)] space-y-2 text-xs sm:text-sm">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-[var(--foreground)] leading-relaxed"><strong class="text-[var(--primary)]">📖 景点导读：</strong>${p.storyZh}</p>
+              <button onclick="openWikiModal(${p.id})" class="shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold bg-[var(--card)] text-[var(--primary)] border border-[var(--border)] cursor-pointer">展开Wiki ↗</button>
+            </div>
+            <div class="pt-2 border-t border-[var(--border)]/70 flex items-center justify-between gap-2 flex-wrap">
+              <div class="text-xs text-[var(--muted-foreground)] select-all"><strong class="text-[var(--foreground)]">📍 地址：</strong>${p.address}</div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button onclick="speakPlace(${p.id}, 'addr', 0.92)" class="px-2 py-1 rounded-lg text-[11px] font-extrabold bg-[var(--primary)]/15 text-[var(--primary)] cursor-pointer">🔊 读地址</button>
+                <button onclick="speakPlace(${p.id}, 'addr', 0.65)" class="px-1.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 cursor-pointer">🐢</button>
+              </div>
+            </div>
+            <div class="text-xs text-[var(--muted-foreground)]"><strong class="text-[var(--foreground)]">🕒 时间：</strong>${p.hours}</div>
+          </div>
+
+          <!-- Practical Travel Note -->
+          <div class="p-3 rounded-xl text-xs sm:text-sm leading-relaxed ${hasWarning ? 'bg-amber-500/15 border border-amber-500/40 text-[var(--foreground)] font-medium' : 'bg-[var(--content)] text-[var(--muted-foreground)]'}">
+            <strong class="text-[var(--foreground)]">💡 实战提示：</strong>${p.note}
+          </div>
+
+          <!-- Google Maps Nearby Food & Essentials Strip -->
+          <div class="p-2.5 rounded-xl bg-[var(--content)]/35 border border-[var(--border)] space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-[var(--foreground)]">🍴 在 Google Maps 探索此地周边 (${p.city})：</span>
+              <a href="${getGoogleMapsPlaceUrl(p)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-[var(--primary)] hover:underline">查看评价与街景 ↗</a>
+            </div>
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+              ${exploreLinks.map(item => `
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="px-2 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--primary)] text-center transition flex flex-col items-center justify-center gap-0.5 shadow-2xs">
+                  <span class="text-base">${item.icon}</span>
+                  <span class="text-[11px] font-extrabold text-[var(--foreground)] leading-tight">${item.labelZh}</span>
+                </a>
+              `).join("")}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // ==================== COMPACT SCANNABLE ITINERARY LIST ====================
+    function renderPlaceList() {
+      const filtered = getFilteredPlaces();
+      document.getElementById("listCountBadge").textContent = filtered.length;
+      const container = document.getElementById("placeListContainer");
+
+      if (filtered.length === 0) {
+        const allMatches = searchQuery
+          ? PLACES.filter(p => `${p.id} ${p.nameZh} ${p.nameEn} ${p.nameEs} ${p.namePt} ${p.day} ${p.address} ${p.note}`.toLowerCase().includes(searchQuery.toLowerCase())).length
+          : 39;
+        container.innerHTML = `
+          <div class="p-6 text-center space-y-3">
+            <div class="text-2xl">🧭</div>
+            <div class="text-sm font-extrabold text-[var(--foreground)]">在当前区域/分类筛选下未找到匹配站点</div>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              ${searchQuery ? `关键词「${searchQuery}」在全程 39 个站点中有 ${allMatches} 个匹配项。` : "当前城市图层下没有该类别的站点。"}
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <button onclick="resetFiltersAndSearchAll(true)" class="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer">
+                🌎 在全程 39 个站点中查看
+              </button>
+              <button onclick="resetFiltersAndSearchAll(false)" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                ↺ 重置全部筛选
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => {
+        const isSelected = p.id === selectedId;
+        const color = CAT_COLORS[p.cat] || "#059669";
+        const hasWarning = p.note.includes("⚠️");
+        const h = getLanguageHierarchy(p);
+
+        return `
+          <div data-place-id="${p.id}" class="place-row p-2.5 rounded-xl cursor-pointer transition flex items-center justify-between gap-2.5 ${isSelected ? 'bg-[var(--secondary)]/65 border-2 border-[var(--primary)]' : 'hover:bg-[var(--content)]/70 border border-transparent'}">
+            <div class="flex items-start gap-2.5 min-w-0 flex-1">
+              <span class="w-7 h-7 rounded-full text-xs font-extrabold text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs" style="background:${color}">${p.id}</span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-bold text-[var(--muted-foreground)]">${p.day} · ${p.catZh}</span>
+                  ${hasWarning ? '<span class="px-1.5 py-0.2 rounded text-[10px] font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400">⚠️ 注意</span>' : ''}
+                </div>
+                <div class="text-sm font-extrabold text-[var(--foreground)] truncate mt-0.5">${p.nameZh}</div>
+                <div class="text-xs font-bold text-[var(--primary)] truncate">${h.primaryLocal.flag} ${h.primaryLocal.text}</div>
+                ${activeLang === "smart4" ? `<div class="text-[11px] text-[var(--muted-foreground)] truncate">${h.secondaryLocal.flag} ${h.secondaryLocal.text} · 🇺🇸 ${p.nameEn}</div>` : ''}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
+              <button onclick="speakPlace(${p.id}, 'primary', 0.95)" aria-label="朗读当地名称" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)] cursor-pointer" title="朗读 ${h.primaryLocal.fullTag}">
+                🔊 ${h.primaryLocal.flag}
+              </button>
+              <button onclick="speakPlace(${p.id}, 'primary', 0.65)" aria-label="慢速跟读" class="px-2 py-1.5 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer" title="0.65x 慢速跟读">
+                🐢
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll(".place-row").forEach(row => {
+        row.addEventListener("click", () => {
+          const id = Number(row.getAttribute("data-place-id"));
+          selectPlace(id, false, true);
+          if (window.innerWidth < 1024 && currentMobileView === "list") {
+            setMobileView("explore");
+          }
+        });
+      });
+    }
+
+    function selectPlace(id, scrollIntoList, flyOnLeaflet = true) {
+      selectedId = id;
+      const p = PLACES.find(item => item.id === id);
+      renderMap(false);
+      renderDetailCard();
+      renderPlaceList();
+
+      if (flyOnLeaflet && leafletAvailable && lfMap && mapMode.startsWith("gm_") && mapMode !== "gm_embed" && p) {
+        const targetZoom = Math.max(lfMap.getZoom(), activeLayer === "all" ? 13 : 15);
+        lfMap.flyTo([p.lat, p.lng], targetZoom, { duration: 0.6 });
+        if (lfMarkerMap[id]) {
+          setTimeout(() => lfMarkerMap[id].openPopup(), 350);
+        }
+      }
+
+      if (scrollIntoList) {
+        const el = document.querySelector(`[data-place-id="${id}"]`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    // ==================== DRIVER FLASHCARD + SURVIVAL PHRASEBOOK MODAL ====================
+    window.speakLocalPhrase = function(id, rate = 0.92) {
+      const p = PLACES.find(item => item.id === id) || PLACES[0];
+      const isBrazil = p.country === "BR";
+      const text = isBrazil
+        ? `Olá, por favor, pode me levar para ${p.namePt}? O endereço é ${p.address.replace(/, Brasil/g, "")}`
+        : `Hola, por favor, ¿me puede llevar a ${p.nameEs}? La dirección es ${p.address.replace(/, Argentina/g, "")}`;
+      window.speakText(text, isBrazil ? "pt-BR" : "es-AR", rate, "🚕 乘车完整问路句");
+    };
+
+    window.openDriverModal = function(id) {
+      const p = PLACES.find(item => item.id === id) || PLACES[0];
+      const h = getLanguageHierarchy(p);
+      const isBrazil = p.country === "BR";
+      const phrases = isBrazil ? SURVIVAL_PHRASES.BR : SURVIVAL_PHRASES.AR;
+      const fullSentence = isBrazil
+        ? `🇧🇷 PT: Olá! Pode me levar para "${p.namePt}", por favor?`
+        : `🇦🇷 ES: ¡Hola! ¿Me puede llevar a "${p.nameEs}", por favor?`;
+
+      document.getElementById("modalBody").innerHTML = `
+        <div class="p-4 rounded-2xl bg-[var(--content)] border-2 border-[var(--primary)] space-y-2.5">
+          <div class="flex items-center justify-between flex-wrap gap-1.5">
+            <span class="text-xs font-extrabold text-[var(--primary)]">${h.primaryLocal.fullTag} (给当地司机看/点击发音)</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="speakPlace(${p.id}, 'primary', 0.95)" class="px-3 py-1 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer">🔊 读名称</button>
+              <button onclick="speakPlace(${p.id}, 'primary', 0.65)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer">🐢 慢读</button>
+            </div>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[var(--foreground)] leading-tight select-all">${h.primaryLocal.text}</div>
+          <div class="text-xs font-semibold text-[var(--muted-foreground)]">${h.secondaryLocal.flag} ${h.secondaryLocal.text} · 🇨🇳 ${p.nameZh}</div>
+
+          <div class="pt-2.5 border-t border-[var(--border)] flex items-start justify-between gap-2">
+            <div class="text-sm sm:text-base font-extrabold text-[var(--foreground)] select-all">📍 ${p.address}</div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button onclick="speakPlace(${p.id}, 'addr', 0.92)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-[var(--primary)]/15 text-[var(--primary)] cursor-pointer">🔊 读地址</button>
+              <button onclick="speakPlace(${p.id}, 'addr', 0.65)" class="px-2 py-1 rounded-xl text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 cursor-pointer">🐢</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[var(--secondary)]/45 border border-[var(--primary)]/30 space-y-2">
+          <div class="flex items-center justify-between flex-wrap gap-1.5">
+            <span class="text-xs font-extrabold text-[var(--foreground)]">🗣️ 整句乘车问路话术 (外放给司机听)：</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="speakLocalPhrase(${p.id}, 0.92)" class="px-3 py-1 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer">🔊 整句朗读</button>
+              <button onclick="speakLocalPhrase(${p.id}, 0.65)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400 cursor-pointer">🐢 慢速跟读</button>
+            </div>
+          </div>
+          <div class="text-sm font-bold text-[var(--primary)]">${fullSentence}</div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="text-xs font-extrabold text-[var(--foreground)]">🎒 ${isBrazil ? "🇧🇷 巴西葡语 (Português) 旅行高频生存口语" : "🇦🇷 阿根廷西语 (Español) 旅行高频生存口语"}：</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${phrases.map(item => `
+              <div class="p-2.5 rounded-xl bg-[var(--content)]/60 border border-[var(--border)] flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-xs font-bold text-[var(--foreground)]">${item.zh}</div>
+                  <div class="text-xs font-extrabold text-[var(--primary)] truncate mt-0.5">${item.local}</div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="speakText('${item.local.replace(/'/g, "\\'")}', '${item.lang}', 0.95, '${item.zh}')" class="px-2 py-1 rounded-lg text-xs font-extrabold bg-[var(--card)] border border-[var(--border)] cursor-pointer">🔊</button>
+                  <button onclick="speakText('${item.local.replace(/'/g, "\\'")}', '${item.lang}', 0.65, '${item.zh}')" class="px-1.5 py-1 rounded-lg text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 cursor-pointer">🐢</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-2 pt-1">
+          <button onclick="navigator.clipboard.writeText('${h.primaryLocal.text.replace(/'/g, "\\'")} - ${p.address.replace(/'/g, "\\'")}'); this.textContent='✅ 已复制!'" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+            📋 复制名称与地址
+          </button>
+          ${p.uberAvailable ? `
+            <a href="${getUberDeepLink(p)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-900 dark:bg-white text-white dark:text-slate-900">
+              🚗 一键叫 Uber
+            </a>
+          ` : ''}
+          <a href="${getGoogleMapsDirUrl(p)}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-white">
+            📍 Google Maps 导航 ↗
+          </a>
+        </div>
+      `;
+      document.getElementById("driverModal").classList.remove("hidden");
+    };
+
+    document.getElementById("btnCloseModal").addEventListener("click", () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      document.getElementById("driverModal").classList.add("hidden");
+    });
+    document.getElementById("driverModal").addEventListener("click", (e) => {
+      if (e.target.id === "driverModal") {
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        document.getElementById("driverModal").classList.add("hidden");
+      }
+    });
+
+    // ==================== EMBEDDED AI TRAVEL ASSISTANT CHATBOT ====================
+    const TRIP_SYSTEM_SUMMARY = `你是 2026 南美 15 日游（10月1日–10月15日，阿根廷+巴西，2人同行）专属随身 AI 导游。
+全程 5 大阶段共 39 个坐标点：
+- D1–D3 (10/01–10/03) L1 布宜诺斯艾利斯 (阿根廷西语 es-AR)：CM383/CM219 抵 EZE 国际机场，住 Dazzler by Wyndham Buenos Aires Polo (Palermo)。D2 游览五月广场、玫瑰宫、主座堂、方尖碑、博卡区 Caminito（仅白天去注意安全）、雅典人书店、老仓库探戈秀。
+- D3–D5 (10/03–10/05) L2 卡拉法特 & 莫雷诺冰川 (阿根廷西语 es-AR)：D3 从市区 AEP 机场搭 AR1894 (11:20-14:40) 飞抵 FTE，住 Posada Los Álamos，逛解放者大道、尼梅兹泻湖看火烈鸟。D4 全天佩里托莫雷诺冰川栈道 + Hielo y Aventura 冰爪徒步（必穿硬底徒步鞋/运动鞋，严禁雨靴高跟鞋；必带手套、墨镜、防晒霜、防风防水冲锋衣及自带午餐便当）。
+- D5–D7 (10/05–10/07) L3 伊瓜苏瀑布阿/巴两侧：D5 搭 AR1897 (FTE 12:30-15:30 AEP) 转 AR1790 (AEP 17:40-19:35 IGR) 抵阿根廷侧，跨境入住巴西侧 Bourbon Thermas Eco Resort (Foz do Iguaçu，进入巴西切换为葡萄牙语 pt-BR)。D6 游阿根廷侧国家公园与恶魔咽喉；D7 上午游巴西侧全景步道与伊瓜苏鸟园，下午从巴西侧 IGU 机场搭 LA3461 (17:15) 经巴西利亚 BSB 转 LA3750 抵玛瑙斯 MAO (23:20)。
+- D7–D10 (10/07–10/10) L4 玛瑙斯 & 亚马逊雨林 (巴西葡语 pt-BR，UTC-4 比里约慢1小时)：D7 晚住 Mercure Manaus；D8–D10 乘船入住 Amazon Ecopark Jungle Lodge（看黑白两河交汇、粉红河豚、钓食人鱼、夜寻凯门鳄；2人3天需共备 110–130ml 25-30% DEET 防蚊液，每4小时补涂）。D10 下午游亚马逊大剧院与古市场，深夜搭 D11 01:00 LA3891 飞里约 GIG (06:10)。
+- D11–D14 (10/11–10/14) L5 里约热内卢 (巴西葡语 pt-BR)：住科帕卡巴纳海滩 Windsor Leme Hotel (3晚)。D12 耶稣山救世基督像、糖面包山缆车、马拉卡纳球场、桑巴舞秀；D13 塞拉隆彩色阶梯、天梯大教堂、皇家植物园、佩皮诺滑翔伞海滩；D14 皇家葡萄牙语阅览室（周三开放！）、明日博物馆，晚 21:55 搭 AA7759 飞纽约 JFK 转 AA149 返旧金山 SFO。`;
+
+    function appendChatBubble(role, htmlContent) {
+      const box = document.getElementById("aiChatMessages");
+      const div = document.createElement("div");
+      if (role === "user") {
+        div.className = "flex justify-end";
+        div.innerHTML = `<div class="max-w-[85%] rounded-2xl rounded-br-sm px-3.5 py-2.5 bg-[var(--primary)] text-white text-xs sm:text-sm font-semibold shadow-2xs">${htmlContent}</div>`;
+      } else {
+        div.className = "flex justify-start";
+        div.innerHTML = `<div class="max-w-[92%] rounded-2xl rounded-bl-sm p-3.5 bg-[var(--card)] border border-[var(--border)] text-xs sm:text-sm text-[var(--foreground)] leading-relaxed space-y-2 shadow-2xs">${htmlContent}</div>`;
+      }
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return div;
+    }
+
+    function findRelevantPlaceFromQuery(q) {
+      const lower = q.toLowerCase();
+      for (const p of PLACES) {
+        if (
+          lower.includes(p.nameZh.slice(0, 3).toLowerCase()) ||
+          lower.includes(p.nameEn.toLowerCase().slice(0, 8)) ||
+          lower.includes(p.nameEs.toLowerCase().slice(0, 8)) ||
+          lower.includes(p.namePt.toLowerCase().slice(0, 8)) ||
+          (lower.includes("冰川") && p.id === 14) ||
+          (lower.includes("恶魔咽喉") && p.id === 17) ||
+          (lower.includes("鸟园") && p.id === 20) ||
+          (lower.includes("两河交汇") && p.id === 25) ||
+          (lower.includes("大剧院") && p.id === 26) ||
+          (lower.includes("基督") && p.id === 30) ||
+          (lower.includes("耶稣山") && p.id === 30) ||
+          (lower.includes("糖面包") && p.id === 31) ||
+          (lower.includes("塞拉隆") && p.id === 34) ||
+          (lower.includes("阅览室") && p.id === 38) ||
+          (lower.includes("明日博物馆") && p.id === 39) ||
+          (lower.includes("博卡") && p.id === 6) ||
+          (lower.includes("雅典人") && p.id === 7) ||
+          (lower.includes("玫瑰宫") && p.id === 3)
+        ) {
+          return p;
+        }
+      }
+      return PLACES.find(item => item.id === selectedId) || PLACES[0];
+    }
+
+    async function buildLocalSmartAnswer(question) {
+      const q = question.toLowerCase();
+      const targetPlace = findRelevantPlaceFromQuery(question);
+      const h = getLanguageHierarchy(targetPlace);
+
+      if (q.includes("航班") || q.includes("飞机") || q.includes("几点飞") || q.includes("eze") || q.includes("aep")) {
+        return `
+          <div class="font-extrabold text-[var(--primary)]">✈️ 全程 10 趟航班时刻表 &amp; 换机场黄金提醒</div>
+          <ul class="list-disc pl-4 space-y-1 text-xs">
+            <li><strong>D1 (10/01)</strong>: <code>CM383</code> SFO 01:12 → PTY 10:27 | <code>CM219</code> PTY 13:15 → <strong>EZE 22:26</strong></li>
+            <li><strong>D3 (10/03)</strong>: <code>AR1894</code> <strong>AEP 11:20</strong> → FTE 14:40 <span class="text-amber-600 font-bold">(⚠️ 在市区 AEP 机场起飞，距酒店12分钟，千万别去 EZE！)</span></li>
+            <li><strong>D5 (10/05)</strong>: <code>AR1897</code> FTE 12:30 → AEP 15:30 | <code>AR1790</code> AEP 17:40 → <strong>IGR 19:35 (阿根廷侧)</strong></li>
+            <li><strong>D7 (10/07)</strong>: <code>LA3461</code> <strong>IGU 17:15 (巴西侧)</strong> → BSB 19:15 | <code>LA3750</code> BSB 21:20 → <strong>MAO 23:20</strong></li>
+            <li><strong>D11 (10/11)</strong>: <code>LA3891</code> MAO 01:00 (即D10深夜) → <strong>GIG 06:10</strong></li>
+            <li><strong>D14–15 (10/14–15)</strong>: <code>AA7759</code> GIG 21:55 → JFK 06:55 (+1) | <code>AA149</code> JFK 11:00 → SFO 14:32</li>
+          </ul>
+          <div class="pt-1 flex flex-wrap gap-1.5">
+            <button onclick="selectPlace(9, true, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">📍 定位 #9 布宜 AEP 市区机场</button>
+            <button onclick="selectPlace(21, true, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">📍 定位 #21 巴西伊瓜苏 IGU 机场</button>
+          </div>
+        `;
+      }
+
+      if (q.includes("冰川") && (q.includes("穿") || q.includes("装备") || q.includes("天气") || q.includes("规定"))) {
+        return `
+          <div class="font-extrabold text-[var(--primary)]">🧊 D4 (10/04) 佩里托莫雷诺冰川徒步 (Hielo y Aventura) 硬性规定</div>
+          <ul class="list-disc pl-4 space-y-1 text-xs">
+            <li><strong>鞋子要求 (严查)</strong>：必须穿<strong>硬底登山鞋或高帮运动鞋</strong>（以便绑金属冰爪）；严禁穿高跟鞋、Crocs 洞洞鞋、雪地靴或薄平底鞋。</li>
+            <li><strong>三层穿衣法</strong>：速干保暖内衣 + 抓绒/轻羽绒中层 + <strong>防风防水冲锋衣裤</strong>（冰面阵风可达 30–50 km/h）。</li>
+            <li><strong>必带配件</strong>：<strong>保暖手套</strong>（冰爪和冰面锋利，官方强制要求戴手套）、<strong>UV墨镜</strong>（冰面强紫外线反射）、高倍防晒霜。</li>
+            <li><strong>餐饮规定</strong>：冰川保护区内无餐厅，必须在 D3 下午于卡拉法特解放者大道超市备好<strong>自带午餐便当与饮用水</strong>。</li>
+          </ul>
+          <div class="pt-1 flex flex-wrap gap-1.5">
+            <button onclick="selectPlace(14, true, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--primary)] text-white cursor-pointer">📍 定位 #14 莫雷诺冰川</button>
+            <button onclick="speakPlace(14, 'es', 0.95)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">🔊 听西语 Glaciar Perito Moreno</button>
+          </div>
+        `;
+      }
+
+      if (q.includes("防蚊") || q.includes("牙刷") || q.includes("牙膏") || q.includes("蚊")) {
+        return `
+          <div class="font-extrabold text-[var(--primary)]">🦟 亚马逊防蚊液用量 &amp; 🪥 酒店洗漱用品指南</div>
+          <ul class="list-disc pl-4 space-y-1 text-xs">
+            <li><strong>防蚊液用量 (D8–D10 亚马逊雨林)</strong>：建议携带含 <strong>25%–30% DEET（避蚊胺）</strong>或 20% 派卡瑞丁的防蚊喷雾。按 2 人同行、每天外出 3 次、每 4 小时补涂一次计算，<strong>两人 3 天共需 110–130 毫升</strong>（建议带 2 瓶 60–100ml 装）。注意：<strong>先涂防晒霜，等 10 分钟吸收后再喷防蚊液</strong>！</li>
+            <li><strong>酒店牙刷/拖鞋</strong>：阿根廷与巴西绝大多数四星/五星酒店（包括 Dazzler、Posada Los Álamos、Bourbon、Mercure、Amazon Ecopark、Windsor Leme）出于环保均<strong>不主动提供一次性牙刷、牙膏和塑料拖鞋</strong>，请随身备好洗漱包。</li>
+          </ul>
+        `;
+      }
+
+      if (q.includes("今天") || q.includes("今日") || q.includes("d3")) {
+        const todayPlaces = PLACES.filter(p => p.dayNum.includes(currentTripDay));
+        return `
+          <div class="font-extrabold text-[var(--primary)]">📅 今日行程聚焦 (D${currentTripDay} · 共 ${todayPlaces.length} 个关联站点)</div>
+          <div class="space-y-1.5 text-xs">
+            ${todayPlaces.map(tp => `
+              <div class="p-2 rounded-lg bg-[var(--content)]/60 flex items-center justify-between gap-2">
+                <div><strong>#${tp.id} ${tp.nameZh}</strong> (${tp.day})<br/><span class="text-[var(--muted-foreground)]">${tp.hours}</span></div>
+                <div class="flex gap-1 shrink-0">
+                  <button onclick="selectPlace(${tp.id}, true, true)" class="px-2 py-1 rounded bg-[var(--primary)] text-white font-bold cursor-pointer">定位</button>
+                  <button onclick="speakPlace(${tp.id}, 'primary', 0.95)" class="px-2 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-bold cursor-pointer">🔊</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      if (q.includes("吃") || q.includes("美食") || q.includes("餐厅") || q.includes("点餐") || q.includes("烤肉")) {
+        const foodLink = getNearbyExploreLinks(targetPlace)[0];
+        const isBR = targetPlace.country === "BR";
+        const orderPhrase = isBR
+          ? "Qual prato típico você recomenda? A conta, por favor!"
+          : "¿Qué corte de carne me recomienda? La cuenta, por favor!";
+        return `
+          <div class="font-extrabold text-[var(--primary)]">🥩 #${targetPlace.id} ${targetPlace.nameZh} 周边美食与点餐发音</div>
+          <p class="text-xs">当前位于 <strong>${targetPlace.city} (${isBR ? "🇧🇷 巴西葡语区" : "🇦🇷 阿根廷西语区"})</strong>：</p>
+          <ul class="list-disc pl-4 space-y-1 text-xs">
+            <li><strong>必吃推荐</strong>：${targetPlace.layer === "ba" ? "巴勒莫炭烤眼肉牛排 (Ojo de Bife)、马尔贝克红酒、手工冰淇淋" : (targetPlace.layer === "calafate" ? "巴塔哥尼亚十字架炭烤全羊 (Cordero Patagónico)、Calafate 浆果冰淇淋" : (targetPlace.layer === "amazon" ? "炭烤巨骨舌鱼 (Pirarucu)、大脂鲤排骨鱼 (Tambaqui)、原生态巴西莓 Açaí" : "巴西无限量转盘烤肉 (Churrascaria Rodízio，必点牛臀尖 Picanha)、黑豆饭 Feijoada"))}</li>
+            <li><strong>实用点餐句 (${isBR ? "葡语 PT" : "西语 ES"})</strong>：<code>${orderPhrase}</code></li>
+          </ul>
+          <div class="pt-1 flex flex-wrap gap-1.5">
+            <a href="${foodLink.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 text-white">${foodLink.icon} 在 Google Maps 搜周边${foodLink.labelZh} ↗</a>
+            <button onclick="speakText('${orderPhrase.replace(/'/g, "\\'")}', '${isBR ? "pt-BR" : "es-AR"}', 0.92, '点餐推荐与买单')" class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer">🔊 听点餐发音</button>
+            <button onclick="speakText('${orderPhrase.replace(/'/g, "\\'")}', '${isBR ? "pt-BR" : "es-AR"}', 0.65, '点餐推荐与买单')" class="px-2 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-600 cursor-pointer">🐢 慢读</button>
+          </div>
+        `;
+      }
+
+      let wikiSnippet = "";
+      try {
+        const resp = await fetch(`https://zh.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(targetPlace.wikiZh)}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.extract) wikiSnippet = data.extract;
+        }
+      } catch (_) {}
+
+      return `
+        <div class="font-extrabold text-[var(--primary)]">📍 #${targetPlace.id} ${targetPlace.nameZh} (${targetPlace.day})</div>
+        <div class="p-2.5 rounded-xl bg-[var(--content)]/60 border border-[var(--border)] text-xs space-y-1">
+          <div><strong>${h.primaryLocal.fullTag}</strong>：<span class="text-[var(--primary)] font-extrabold">${h.primaryLocal.text}</span></div>
+          <div><strong>${h.secondaryLocal.fullTag}</strong>：${h.secondaryLocal.text}</div>
+          <div><strong>🇺🇸 English</strong>：${targetPlace.nameEn}</div>
+        </div>
+        <p class="text-xs leading-relaxed"><strong>✨ 核心导读：</strong>${targetPlace.storyZh}</p>
+        ${wikiSnippet ? `<p class="text-xs leading-relaxed text-[var(--muted-foreground)] border-l-2 border-[var(--primary)] pl-2.5"><strong>📖 维基百科摘录：</strong>${wikiSnippet}</p>` : ""}
+        <p class="text-xs leading-relaxed"><strong>💡 实战贴士：</strong>${targetPlace.note}</p>
+        <div class="pt-1 flex flex-wrap gap-1.5">
+          <button onclick="selectPlace(${targetPlace.id}, true, true)" class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer">📍 地图定位</button>
+          <button onclick="speakPlace(${targetPlace.id}, 'primary', 0.95)" class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">🔊 读${h.primaryLocal.tag}</button>
+          <button onclick="speakPlace(${targetPlace.id}, 'primary', 0.65)" class="px-2 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-600 cursor-pointer">🐢 慢读</button>
+          <button onclick="openWikiModal(${targetPlace.id})" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 cursor-pointer">📖 展开完整 Wiki</button>
+        </div>
+      `;
+    }
+
+    window.askAiQuestion = async function(questionText) {
+      const q = (questionText || "").trim();
+      if (!q) return;
+      appendChatBubble("user", q.replace(/</g, "&lt;"));
+      const loadingBubble = appendChatBubble("assistant", "⏳ 正在结合你的 15 日行程与 Wikipedia 知识库生成回答...");
+
+      const savedKey = localStorage.getItem("sa2026_gemini_api_key") || "";
+      const currentP = PLACES.find(item => item.id === selectedId) || PLACES[0];
+
+      if (savedKey) {
+        try {
+          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(savedKey)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              systemInstruction: {
+                parts: [{
+                  text: `${TRIP_SYSTEM_SUMMARY}\n当前用户在地图上选中的地点是：#${currentP.id} ${currentP.nameZh} | 西语: ${currentP.nameEs} | 葡语: ${currentP.namePt} | 地址: ${currentP.address} | 提示: ${currentP.note}。请用简洁清晰的中文回答，若涉及地点名称，请按照「阿根廷优先西语、巴西优先葡语」附上当地语言写法。`
+                }]
+              },
+              contents: [{ role: "user", parts: [{ text: q }] }]
+            })
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (replyText) {
+              const formatted = replyText
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                .replace(/\n/g, "<br/>");
+              loadingBubble.querySelector("div").innerHTML = `
+                <div class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">✨ Gemini 2.5 Flash 实时回答</div>
+                <div class="text-xs sm:text-sm leading-relaxed">${formatted}</div>
+                <div class="pt-1 flex flex-wrap gap-1.5">
+                  <button onclick="speakPlace(${currentP.id}, 'primary', 0.95)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] cursor-pointer">🔊 听 #${currentP.id} 当地发音</button>
+                  <button onclick="openWikiModal(${currentP.id})" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">📖 查看 Wiki</button>
+                </div>
+              `;
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+
+      const htmlAns = await buildLocalSmartAnswer(q);
+      loadingBubble.querySelector("div").innerHTML = htmlAns;
+    };
+
+    document.getElementById("aiChatForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("aiChatInput");
+      const val = input.value.trim();
+      if (!val) return;
+      input.value = "";
+      window.askAiQuestion(val);
+    });
+
+    function updateGeminiKeyBadge() {
+      const hasKey = Boolean(localStorage.getItem("sa2026_gemini_api_key"));
+      document.getElementById("geminiKeyStatusText").textContent = hasKey ? "Gemini已连接" : "Gemini增强";
+    }
+    document.getElementById("btnToggleGeminiKey").addEventListener("click", () => {
+      document.getElementById("geminiKeyDrawer").classList.toggle("hidden");
+      document.getElementById("geminiApiKeyInput").value = localStorage.getItem("sa2026_gemini_api_key") || "";
+    });
+    document.getElementById("btnSaveGeminiKey").addEventListener("click", () => {
+      const v = document.getElementById("geminiApiKeyInput").value.trim();
+      if (v) localStorage.setItem("sa2026_gemini_api_key", v);
+      updateGeminiKeyBadge();
+      document.getElementById("geminiKeyDrawer").classList.add("hidden");
+    });
+    document.getElementById("btnClearGeminiKey").addEventListener("click", () => {
+      localStorage.removeItem("sa2026_gemini_api_key");
+      document.getElementById("geminiApiKeyInput").value = "";
+      updateGeminiKeyBadge();
+    });
+    updateGeminiKeyBadge();
+
+    appendChatBubble("assistant", `
+      <div class="font-extrabold text-[var(--primary)]">👋 你好！我是你的 2026 南美 15 日随身 AI 导游</div>
+      <p class="text-xs leading-relaxed">
+        我已经掌握你全程 <strong>10 趟航班、6 家酒店、39 个阿/巴坐标点（🇦🇷阿根廷优先西语 · 🇧🇷巴西优先葡语）</strong>，并已连接 <strong>Wikipedia 实时百科检索</strong>。你可以直接点击上方快捷问题，或输入任何关于景点历史、交通、穿搭、美食点餐的问题！
+      </p>
+    `);
+
+    // ==================== RIGHT PANE & MOBILE VIEW SWITCHERS ====================
+    window.switchRightTab = function(tab) {
+      rightTab = tab;
+      const listPane = document.getElementById("listSubPane");
+      const aiPane = document.getElementById("aiSubPane");
+      const btnList = document.getElementById("tabBtnList");
+      const btnAi = document.getElementById("tabBtnAi");
+
+      if (tab === "ai") {
+        listPane.classList.add("hidden");
+        aiPane.classList.remove("hidden");
+        btnAi.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1.5";
+        btnList.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1.5";
+        if (window.innerWidth < 1024) setMobileView("ai");
+      } else {
+        aiPane.classList.add("hidden");
+        listPane.classList.remove("hidden");
+        btnList.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-extrabold bg-[var(--card)] text-[var(--foreground)] shadow-2xs transition cursor-pointer flex items-center justify-center gap-1.5";
+        btnAi.className = "flex-1 py-1.5 px-3 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer flex items-center justify-center gap-1.5";
+      }
+    };
+
+    let currentMobileView = "explore";
+    function setMobileView(mview) {
+      currentMobileView = mview;
+      document.querySelectorAll(".mview-btn").forEach(b => {
+        const active = b.getAttribute("data-mview") === mview;
+        b.className = active
+          ? "mview-btn flex-1 py-2 rounded-xl text-xs font-extrabold bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer"
+          : "mview-btn flex-1 py-2 rounded-xl text-xs font-bold text-[var(--muted-foreground)] flex items-center justify-center gap-1 mx-0.5 cursor-pointer";
+      });
+
+      const mapCol = document.getElementById("mapPaneCol");
+      const rightCol = document.getElementById("rightPaneCol");
+
+      if (window.innerWidth < 1024) {
+        if (mview === "explore") {
+          mapCol.classList.remove("hidden");
+          rightCol.classList.add("hidden");
+        } else if (mview === "list") {
+          mapCol.classList.add("hidden");
+          rightCol.classList.remove("hidden");
+          switchRightTab("list");
+        } else if (mview === "ai") {
+          mapCol.classList.add("hidden");
+          rightCol.classList.remove("hidden");
+          document.getElementById("listSubPane").classList.add("hidden");
+          document.getElementById("aiSubPane").classList.remove("hidden");
+        }
+      } else {
+        mapCol.classList.remove("hidden");
+        rightCol.classList.remove("hidden");
+      }
+
+      setTimeout(() => {
+        if (lfMap && mapMode.startsWith("gm_") && mapMode !== "gm_embed") {
+          lfMap.invalidateSize();
+        }
+      }, 60);
+    }
+
+    document.querySelectorAll(".mview-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        setMobileView(btn.getAttribute("data-mview"));
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 1024) {
+        document.getElementById("mapPaneCol").classList.remove("hidden");
+        document.getElementById("rightPaneCol").classList.remove("hidden");
+      } else {
+        setMobileView(currentMobileView);
+      }
+    });
+
+    // ==================== HEADER & FILTER CONTROLS ====================
+    function renderMap(fitBounds = false) {
+      if (mapMode === "gm_embed") {
+        updateGoogleEmbedIframe();
+      } else if (mapMode === "vector" || !leafletAvailable) {
+        renderVectorMap();
+      } else {
+        renderLeafletMap(fitBounds);
+      }
+    }
+
+    document.getElementById("btnSettingsMenu").addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("settingsPopover").classList.toggle("hidden");
+    });
+    document.addEventListener("click", (e) => {
+      const pop = document.getElementById("settingsPopover");
+      if (!pop.classList.contains("hidden") && !pop.contains(e.target) && e.target.id !== "btnSettingsMenu") {
+        pop.classList.add("hidden");
+      }
+    });
+
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeLang = btn.getAttribute("data-lang");
+        document.querySelectorAll(".lang-btn").forEach(b => {
+          const active = b.getAttribute("data-lang") === activeLang;
+          b.className = active
+            ? "lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)] cursor-pointer flex items-center justify-between"
+            : "lang-btn text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--content)] cursor-pointer flex items-center justify-between";
+        });
+        document.getElementById("settingsPopover").classList.add("hidden");
+        if (lfTileLayer && mapMode.startsWith("gm_") && mapMode !== "gm_embed") {
+          lfTileLayer.setUrl(getGoogleTileUrl(mapMode));
+        }
+        renderMap(false);
+        renderDetailCard();
+        renderPlaceList();
+      });
+    });
+
+    document.querySelectorAll(".bm-btn").forEach(btn => {
+      btn.addEventListener("click", () => setMapMode(btn.getAttribute("data-bm"), false));
+    });
+
+    document.querySelectorAll(".layer-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeLayer = btn.getAttribute("data-layer");
+        syncFilterButtonsUi();
+        const filtered = getFilteredPlaces();
+        if (filtered.length > 0 && !filtered.some(p => p.id === selectedId)) {
+          selectedId = filtered[0].id;
+        }
+        vecZoom = 1; vecPanX = 0; vecPanY = 0;
+        renderMap(true);
+        renderDetailCard();
+        renderPlaceList();
+      });
+    });
+
+    document.querySelectorAll(".cat-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeCat = btn.getAttribute("data-cat");
+        syncFilterButtonsUi();
+        const filtered = getFilteredPlaces();
+        if (filtered.length > 0 && !filtered.some(p => p.id === selectedId)) {
+          selectedId = filtered[0].id;
+        }
+        renderMap(true);
+        renderDetailCard();
+        renderPlaceList();
+      });
+    });
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim();
+      renderMap(false);
+      renderPlaceList();
+    });
+
+    document.getElementById("btnZoomIn").addEventListener("click", () => {
+      if (mapMode.startsWith("gm_") && mapMode !== "gm_embed" && leafletAvailable && lfMap) lfMap.zoomIn();
+      else { vecZoom = Math.min(vecZoom * 1.45, 18); renderVectorMap(); }
+    });
+    document.getElementById("btnZoomOut").addEventListener("click", () => {
+      if (mapMode.startsWith("gm_") && mapMode !== "gm_embed" && leafletAvailable && lfMap) lfMap.zoomOut();
+      else { vecZoom = Math.max(vecZoom / 1.45, 0.75); renderVectorMap(); }
+    });
+    document.getElementById("btnResetView").addEventListener("click", () => {
+      vecZoom = 1; vecPanX = 0; vecPanY = 0;
+      renderMap(true);
+    });
+
+    const svgEl = document.getElementById("mapSvg");
+    svgEl.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.22 : 1 / 1.22;
+      vecZoom = Math.min(Math.max(vecZoom * factor, 0.75), 18);
+      renderVectorMap();
+    }, { passive: false });
+    svgEl.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".pin-group")) return;
+      isDragging = true;
+      dragStartX = e.clientX - vecPanX;
+      dragStartY = e.clientY - vecPanY;
+      svgEl.setPointerCapture(e.pointerId);
+    });
+    svgEl.addEventListener("pointermove", (e) => {
+      if (!isDragging) return;
+      vecPanX = e.clientX - dragStartX;
+      vecPanY = e.clientY - dragStartY;
+      renderVectorMap();
+    });
+    svgEl.addEventListener("pointerup", () => { isDragging = false; });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        document.getElementById("driverModal").classList.add("hidden");
+        document.getElementById("wikiModal").classList.add("hidden");
+        document.getElementById("settingsPopover").classList.add("hidden");
+      }
+    });
+
+    // ==================== 4-LANGUAGE KML & CSV EXPORTERS ====================
+    function escapeXml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+    }
+
+    function generateKml() {
+      const layers = ["ba", "calafate", "iguazu", "amazon", "rio"];
+      const foldersXml = layers.map(lKey => {
+        const items = PLACES.filter(p => p.layer === lKey);
+        const folderName = `${items[0]?.layerZh} | ${items[0]?.layerEn}`;
+        const placemarks = items.map(p => {
+          const primaryLocal = p.country === "BR" ? p.namePt : p.nameEs;
+          return `
+      <Placemark>
+        <name>${escapeXml(`#${p.id} [${p.day}] ${p.nameZh} | ${primaryLocal} | ${p.nameEn}`)}</name>
+        <description>${escapeXml(`🇨🇳 中文: ${p.nameZh}\n🇦🇷 Español: ${p.nameEs}\n🇧🇷 Português: ${p.namePt}\n🇺🇸 English: ${p.nameEn}\n📖 导读: ${p.storyZh}\n🕒 时间: ${p.hours}\n📍 地址: ${p.address}\n💡 提示: ${p.note}`)}</description>
+        <Point>
+          <coordinates>${p.lng},${p.lat},0</coordinates>
+        </Point>
+      </Placemark>`;
+        }).join("");
+        return `
+    <Folder>
+      <name>${escapeXml(folderName)}</name>${placemarks}
+    </Folder>`;
+      }).join("");
+
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>2026 南美15日四语随身地图 (ZH / ES / PT / EN)</name>
+    <description>阿根廷优先西语、巴西优先葡语，共 39 个坐标点。</description>${foldersXml}
+  </Document>
+</kml>`;
+    }
+
+    function generateCsv() {
+      const headers = ["ID", "Country", "Layer_ZH", "Day", "Category", "Name_ZH", "Name_ES_Spanish", "Name_PT_Portuguese", "Name_EN_English", "Latitude", "Longitude", "Address", "Hours", "Story_ZH", "Notes"];
+      const rows = PLACES.map(p => [
+        p.id, p.country, p.layerZh, p.day, p.catZh, p.nameZh, p.nameEs, p.namePt, p.nameEn, p.lat, p.lng, p.address, p.hours, p.storyZh, p.note
+      ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      return "\uFEFF" + [headers.join(","), ...rows].join("\n");
+    }
+
+    function triggerDownload(filename, content, mime) {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("btnDownloadKml").addEventListener("click", () => {
+      triggerDownload("south_america_2026_4lang_layers.kml", generateKml(), "application/vnd.google-earth.kml+xml;charset=utf-8");
+    });
+    document.getElementById("btnDownloadCsv").addEventListener("click", () => {
+      triggerDownload("south_america_2026_4lang_places.csv", generateCsv(), "text/csv;charset=utf-8");
+    });
+
+    // ==================== INITIALIZE ====================
+    initLeafletIfAvailable();
+    if (window.innerWidth < 1024) {
+      setMobileView("explore");
+    }
+    renderMap(true);
+    renderDetailCard();
+    renderPlaceList();
+  </script>
+</body>
+</html>
