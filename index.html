@@ -2969,11 +2969,90 @@
       `;
     };
 
+    let TRAVEL_OPS_LOG = [
+      {
+        tripDay: "D4 · 10/04",
+        shortLocalTime: "07:58 ART",
+        placeId: 14,
+        issuedFromEn: "Patagonia, El Calafate, Argentina 🇦🇷",
+        titleZh: "3 层旅行位置溯源引擎 (location_provenance.py) 与巴塔哥尼亚远程研发实录",
+        category: "Location Provenance",
+        outcome: "Stamps every command with 'Issued from Patagonia, El Calafate' + live Travel Ops Log"
+      },
+      {
+        tripDay: "D4 · 10/04",
+        shortLocalTime: "07:45 ART",
+        placeId: 14,
+        issuedFromEn: "Patagonia, El Calafate, Argentina 🇦🇷",
+        titleZh: "通道 7×24 自愈看门狗 (watchdog.py) + LOAS2 预警 + 会话自动故障转移",
+        category: "High-Availability SRE",
+        outcome: "23/23 unit tests green; cron watchdog + bounded exponential backoff + rescue session"
+      },
+      {
+        tripDay: "D3 · 10/03",
+        shortLocalTime: "20:39 ART",
+        placeId: 13,
+        issuedFromEn: "Patagonia, El Calafate, Argentina 🇦🇷",
+        titleZh: "Alloy v0.7 多智能体混合架构 (MoA) 端到端评测与白皮书定稿",
+        category: "AI Research & Eval",
+        outcome: "Completed 5-task adversarial benchmark (+24% quality over Best-of-1) & whitepaper"
+      },
+      {
+        tripDay: "D3 · 10/03",
+        shortLocalTime: "19:41 ART",
+        placeId: 13,
+        issuedFromEn: "Patagonia, El Calafate, Argentina 🇦🇷",
+        titleZh: "Google Chat 通道升级为 OpenClaw 主对话流直回 + 3 秒极速响应",
+        category: "Agent Infrastructure",
+        outcome: "Eliminated sub-thread nesting, added parallel voice pre-download & instant ack"
+      },
+      {
+        tripDay: "D3 · 10/03",
+        shortLocalTime: "17:56 ART",
+        placeId: 13,
+        issuedFromEn: "Patagonia, El Calafate, Argentina 🇦🇷",
+        titleZh: "JWC v0.79 代码审查与正式提交 (cl/992959995)",
+        category: "Code Review & Submit",
+        outcome: "Audited diff, verified presubmit, and submitted cl/992959995 from Patagonia"
+      }
+    ];
+
     window.renderPhotosGallery = function() {
       const badge = document.getElementById("photoCountBadge");
       if (badge) badge.textContent = LIVE_PHOTOS.length;
       const box = document.getElementById("photosGalleryContainer");
       if (!box) return;
+      const opsHtml = `
+        <div class="rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 p-3.5 space-y-2.5 text-xs shadow-xs">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="font-extrabold text-sm text-[var(--foreground)] flex items-center gap-1.5">
+              <span>⚡</span>
+              <span>The Agent is Always Running While I'm Traveling</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-600 text-white">LIVE · Cloudtop 24×7</span>
+          </div>
+          <div class="p-2 rounded-xl bg-[var(--card)]/80 border border-emerald-500/30 font-mono-code text-[11px] text-emerald-700 dark:text-emerald-300">
+            📍 This command is issued from <strong>Patagonia, El Calafate, Argentina 🇦🇷</strong> — the agent is always running while I'm traveling
+          </div>
+          <div class="space-y-1.5">
+            ${TRAVEL_OPS_LOG.slice(0, 6).map(op => `
+              <div class="p-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-start justify-between gap-2">
+                <div class="space-y-0.5 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-1.5 py-0.2 rounded text-[10px] font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)]">${op.tripDay} · ${op.shortLocalTime || ""}</span>
+                    <span class="text-[10px] font-bold text-[var(--primary)]">📍 ${op.issuedFromEn}</span>
+                  </div>
+                  <div class="font-extrabold text-xs text-[var(--foreground)]">${op.titleZh}</div>
+                  <div class="text-[11px] text-[var(--muted-foreground)]">${op.outcome}</div>
+                </div>
+                <button onclick="selectPlace(${op.placeId || 14}, true, true)" class="shrink-0 px-2 py-1 rounded-lg text-[10px] font-extrabold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                  #${op.placeId || 14}
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
       box.innerHTML = LIVE_PHOTOS.map(ph => `
         <div class="rounded-2xl border border-[var(--border)] bg-[var(--card)] overflow-hidden shadow-xs space-y-2.5">
           <div onclick="openPhotoLightbox('${ph.id}')" class="relative w-full h-64 sm:h-72 bg-black cursor-pointer overflow-hidden group">
@@ -3000,7 +3079,7 @@
             </div>
           </div>
         </div>
-      `).join("") + `
+      `).join("") + opsHtml + `
         <div class="p-3.5 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--content)]/40 space-y-1.5 text-xs">
           <div class="font-extrabold text-[var(--foreground)]">☁️ Google Photos 自动同步通道已就绪</div>
           <p class="text-[var(--muted-foreground)] leading-relaxed">
@@ -3010,12 +3089,17 @@
       `;
     };
 
-    // Fetch latest photos/manifest.json dynamically so new synced photos appear without touching HTML
+    // Fetch latest photos/manifest.json dynamically so new synced photos & Travel Ops Log appear without touching HTML
     fetch("photos/manifest.json?t=" + Date.now())
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (data && Array.isArray(data.photos) && data.photos.length > 0) {
-          LIVE_PHOTOS = data.photos;
+        if (data) {
+          if (Array.isArray(data.photos) && data.photos.length > 0) {
+            LIVE_PHOTOS = data.photos;
+          }
+          if (Array.isArray(data.travelOpsLog) && data.travelOpsLog.length > 0) {
+            TRAVEL_OPS_LOG = data.travelOpsLog;
+          }
           renderPhotosGallery();
           renderDetailCard();
         }
