@@ -6781,9 +6781,10 @@ ${trkpts}
       animation: kenburnsZoom 5.5s ease-out forwards;
     }
   </style>
+  <audio id="saVlogBgmAudio" preload="auto" loop src="photos/bgm_spanish_1.mp3"></audio>
   <div id="saVlogModal" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col justify-between p-2 sm:p-4 select-none">
     <!-- Top Control Header -->
-    <div class="max-w-5xl w-full mx-auto space-y-2 z-20">
+    <div class="max-w-5xl w-full mx-auto space-y-1.5 z-20">
       <!-- Story Progress Bars -->
       <div id="vlogProgressBars" class="flex items-center gap-1 w-full pt-1"></div>
 
@@ -6792,7 +6793,7 @@ ${trkpts}
           <span class="px-2 py-0.5 rounded-lg text-[11px] font-black bg-sky-500 text-slate-950 shrink-0">🎬 冰川 VLOG</span>
           <div class="min-w-0">
             <div id="vlogHeaderTitle" class="text-xs sm:text-sm font-extrabold text-white truncate">佩里托莫雷诺冰川 · 12小时时间轴纪实 (08:27 – 20:35)</div>
-            <div id="vlogHeaderSub" class="text-[10px] text-slate-400 truncate">Google Photos 相册 (607项) 精选 · 点击画面左右切换</div>
+            <div id="vlogNowPlayingText" class="text-[10px] text-amber-300 font-bold truncate">🎸 当前西语户外配乐：Jorge Drexler《Movimiento》(拉丁格莱美年度歌曲 · 远征民谣摇滚)</div>
           </div>
         </div>
 
@@ -6816,8 +6817,8 @@ ${trkpts}
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <button type="button" id="btnVlogAudio" onclick="window.toggleVlogAudio()" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-sky-300 border border-sky-500/30 cursor-pointer">
-            🔊 配乐: 关
+          <button type="button" id="btnVlogAudio" onclick="window.toggleVlogAudio()" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-amber-500 text-slate-950 cursor-pointer shadow-xs">
+            🔊 西语BGM: 开
           </button>
           <button type="button" id="btnVlogPlayPause" onclick="window.toggleVlogPlay()" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-white border border-slate-700 cursor-pointer">
             ⏸ 暂停
@@ -6825,10 +6826,29 @@ ${trkpts}
           <button type="button" onclick="window.closeVlogModal()" class="w-7 h-7 rounded-full bg-slate-800 text-white font-bold cursor-pointer">✕</button>
         </div>
       </div>
+
+      <!-- Spanish Outdoor BGM Track Selector Bar -->
+      <div class="flex items-center justify-between gap-1.5 bg-slate-900/80 border border-slate-800 rounded-xl px-2.5 py-1.5 overflow-x-auto no-scrollbar text-[11px]">
+        <span class="text-slate-400 font-bold shrink-0">🎸 切换西语户外配乐：</span>
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+          <button type="button" id="bgmTrackBtn_1" onclick="window.selectVlogBgm(1)" class="px-2 py-0.5 rounded-lg font-extrabold cursor-pointer bg-amber-500 text-slate-950 shrink-0">
+            ① Drexler《Movimiento》(西语远征民谣摇滚 · 主推)
+          </button>
+          <button type="button" id="bgmTrackBtn_2" onclick="window.selectVlogBgm(2)" class="px-2 py-0.5 rounded-lg font-bold cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700 shrink-0">
+            ② Drexler《Despedir a los glaciares》(西语冰川摇滚)
+          </button>
+          <button type="button" id="bgmTrackBtn_3" onclick="window.selectVlogBgm(3)" class="px-2 py-0.5 rounded-lg font-bold cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700 shrink-0">
+            ③ Macaco《Moving》(国家地理西语欢快公路歌)
+          </button>
+          <button type="button" id="bgmTrackBtn_4" onclick="window.selectVlogBgm(4)" class="px-2 py-0.5 rounded-lg font-bold cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700 shrink-0">
+            ④ Drexler & Lafourcade《Salvavidas de hielo》(木吉他对唱)
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Center Stage: Slideshow OR Native MP4 Video -->
-    <div class="max-w-5xl w-full mx-auto flex-1 my-2 relative rounded-3xl overflow-hidden bg-black border border-slate-800 flex items-center justify-center min-h-0">
+    <div class="max-w-5xl w-full mx-auto flex-1 my-1.5 relative rounded-3xl overflow-hidden bg-black border border-slate-800 flex items-center justify-center min-h-0">
       <!-- Slideshow Stage -->
       <div id="vlogSlideStage" class="w-full h-full relative flex items-center justify-center overflow-hidden">
         <img id="vlogBgBlur" src="" alt="" class="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none" />
@@ -6863,12 +6883,12 @@ ${trkpts}
 
       <!-- Native MP4 Video Stage -->
       <div id="vlogMp4Stage" class="hidden w-full h-full flex flex-col items-center justify-center p-3 gap-3 bg-slate-950">
-        <video id="vlogMp4Video" controls playsinline class="max-h-[70vh] w-auto rounded-2xl border border-slate-700 shadow-2xl" poster="photos/glacier_15_lone_figure_wall.jpg">
-          <source src="photos/perito_moreno_vlog.mp4" type="video/mp4" />
+        <video id="vlogMp4Video" controls playsinline class="max-h-[68vh] w-auto rounded-2xl border border-slate-700 shadow-2xl" poster="photos/glacier_15_lone_figure_wall.jpg">
+          <source src="photos/perito_moreno_vlog.mp4?v=2" type="video/mp4" />
         </video>
         <div class="flex items-center gap-3 flex-wrap justify-center">
-          <a href="photos/perito_moreno_vlog.mp4" download="Perito_Moreno_Glacier_Vlog_2026.mp4" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs hover:opacity-95">
-            📥 下载高清 MP4 视频成片 (2.8 MB · 含配乐与中文字幕)
+          <a href="photos/perito_moreno_vlog.mp4?v=2" download="Perito_Moreno_Glacier_Spanish_Vlog_2026.mp4" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs hover:opacity-95">
+            📥 下载高清 MP4 视频成片 (3.4 MB · 西语户外民谣摇滚《Movimiento》配乐+中文字幕)
           </a>
           <a href="https://photos.app.goo.gl/WCvYyE3S3JaTGm7MA" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs border border-slate-700">
             ☁️ 打开原 Google Photos 共享相册 (607张) ↗
@@ -6883,13 +6903,31 @@ ${trkpts}
 
   <script>
     (function() {
+      const BGM_TRACKS = {
+        1: {
+          src: "photos/bgm_spanish_1.mp3",
+          label: "🎸 当前西语户外配乐：Jorge Drexler《Movimiento》(拉丁格莱美年度歌曲 · 远征民谣摇滚 — “Somos una especie en viaje…”)"
+        },
+        2: {
+          src: "photos/bgm_spanish_2.mp3",
+          label: "🎸 当前西语户外配乐：Jorge Drexler《Despedir a los glaciares》(西语冰川摇滚 — “Una gota rueda sobre el hielo…”)"
+        },
+        3: {
+          src: "photos/bgm_spanish_3.mp3",
+          label: "🎸 当前西语户外配乐：Macaco《Moving》(国家地理《地球日》西语欢快公路主题曲 — “Tiempos de pequeños movimientos…”)"
+        },
+        4: {
+          src: "photos/bgm_spanish_4.mp3",
+          label: "🎸 当前西语户外配乐：Jorge Drexler & Natalia Lafourcade《Salvavidas de hielo》(温柔木吉他男女声对唱)"
+        }
+      };
+
       let vlogTheme = "nature"; // 'nature' | 'pure_nature' | 'funny' | 'cinema' | 'mp4'
       let vlogIdx = 0;
       let vlogPlaying = true;
       let vlogTimer = null;
-      let vlogAudioCtx = null;
-      let vlogAudioOscs = [];
-      let vlogAudioOn = false;
+      let vlogAudioOn = true;
+      let currentBgmId = 1;
 
       function getVlogList() {
         const base = LIVE_PHOTOS.filter(p => p.date === "2026-10-04");
@@ -6899,49 +6937,57 @@ ${trkpts}
         return base.length > 0 ? base : LIVE_PHOTOS;
       }
 
-      function stopVlogAudio() {
-        vlogAudioOn = false;
+      function updateBgmUI() {
         const btn = document.getElementById("btnVlogAudio");
-        if (btn) btn.textContent = "🔊 配乐: 关";
-        if (vlogAudioOscs.length > 0) {
-          vlogAudioOscs.forEach(o => { try { o.stop(); } catch (e) {} });
-          vlogAudioOscs = [];
+        if (btn) {
+          btn.textContent = vlogAudioOn ? "🔊 西语BGM: 开" : "🔇 西语BGM: 关";
+          btn.className = vlogAudioOn
+            ? "px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-amber-500 text-slate-950 cursor-pointer shadow-xs"
+            : "px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
         }
-        if (vlogAudioCtx) {
-          try { vlogAudioCtx.close(); } catch (e) {}
-          vlogAudioCtx = null;
+        [1, 2, 3, 4].forEach(id => {
+          const tb = document.getElementById("bgmTrackBtn_" + id);
+          if (!tb) return;
+          if (id === currentBgmId) {
+            tb.className = "px-2 py-0.5 rounded-lg font-extrabold cursor-pointer bg-amber-500 text-slate-950 shrink-0";
+          } else {
+            tb.className = "px-2 py-0.5 rounded-lg font-bold cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700 shrink-0";
+          }
+        });
+        const np = document.getElementById("vlogNowPlayingText");
+        if (np && BGM_TRACKS[currentBgmId]) {
+          np.textContent = BGM_TRACKS[currentBgmId].label;
         }
       }
 
-      function startVlogAudio() {
-        stopVlogAudio();
-        try {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          vlogAudioCtx = new AudioContext();
-          const freqs = vlogTheme === "funny" ? [261.63, 329.63, 392.0, 523.25] : [146.83, 220.0, 277.18, 329.63];
-          const master = vlogAudioCtx.createGain();
-          master.gain.value = 0.08;
-          master.connect(vlogAudioCtx.destination);
-          freqs.forEach((f, i) => {
-            const osc = vlogAudioCtx.createOscillator();
-            const g = vlogAudioCtx.createGain();
-            osc.type = i % 2 === 0 ? "sine" : "triangle";
-            osc.frequency.value = f;
-            g.gain.value = 0.25;
-            osc.connect(g);
-            g.connect(master);
-            osc.start();
-            vlogAudioOscs.push(osc);
-          });
-          vlogAudioOn = true;
-          const btn = document.getElementById("btnVlogAudio");
-          if (btn) btn.textContent = "🔊 配乐: 开";
-        } catch (e) {}
+      function syncBgmPlayback() {
+        const audioEl = document.getElementById("saVlogBgmAudio");
+        if (!audioEl) return;
+        const modalOpen = !document.getElementById("saVlogModal")?.classList.contains("hidden");
+        if (!modalOpen || vlogTheme === "mp4" || !vlogAudioOn) {
+          audioEl.pause();
+          return;
+        }
+        const targetSrc = BGM_TRACKS[currentBgmId]?.src || BGM_TRACKS[1].src;
+        if (!audioEl.getAttribute("src") || !audioEl.getAttribute("src").includes(targetSrc)) {
+          audioEl.setAttribute("src", targetSrc);
+          audioEl.load();
+        }
+        audioEl.volume = 0.85;
+        audioEl.play().catch(() => {});
       }
+
+      window.selectVlogBgm = function(trackId) {
+        currentBgmId = trackId;
+        vlogAudioOn = true;
+        updateBgmUI();
+        syncBgmPlayback();
+      };
 
       window.toggleVlogAudio = function() {
-        if (vlogAudioOn) stopVlogAudio();
-        else startVlogAudio();
+        vlogAudioOn = !vlogAudioOn;
+        updateBgmUI();
+        syncBgmPlayback();
       };
 
       function renderVlogSlide() {
@@ -7023,7 +7069,8 @@ ${trkpts}
       window.closeVlogModal = function() {
         document.getElementById("saVlogModal").classList.add("hidden");
         if (vlogTimer) clearInterval(vlogTimer);
-        stopVlogAudio();
+        const audioEl = document.getElementById("saVlogBgmAudio");
+        if (audioEl) audioEl.pause();
         const vid = document.getElementById("vlogMp4Video");
         if (vid) vid.pause();
       };
@@ -7031,6 +7078,12 @@ ${trkpts}
       window.setVlogTheme = function(theme) {
         vlogTheme = theme;
         vlogIdx = 0;
+        // Automatically select matching Spanish outdoor song for each theme!
+        if (theme === "nature") currentBgmId = 1;       // Drexler - Movimiento
+        else if (theme === "pure_nature") currentBgmId = 2; // Drexler - Despedir a los glaciares
+        else if (theme === "funny") currentBgmId = 3;   // Macaco - Moving
+        else if (theme === "cinema") currentBgmId = 4;  // Drexler & Lafourcade - Salvavidas de hielo
+
         ["nature", "pure_nature", "funny", "cinema", "mp4"].forEach(k => {
           const b = document.getElementById("vlogThemeBtn_" + k);
           if (!b) return;
@@ -7040,6 +7093,7 @@ ${trkpts}
             b.className = "px-2.5 py-1 rounded-xl text-[11px] font-bold cursor-pointer transition bg-slate-800 text-slate-200 hover:bg-slate-700";
           }
         });
+        updateBgmUI();
         const slideStage = document.getElementById("vlogSlideStage");
         const mp4Stage = document.getElementById("vlogMp4Stage");
         const vid = document.getElementById("vlogMp4Video");
@@ -7047,7 +7101,7 @@ ${trkpts}
           slideStage.classList.add("hidden");
           mp4Stage.classList.remove("hidden");
           if (vlogTimer) clearInterval(vlogTimer);
-          stopVlogAudio();
+          syncBgmPlayback();
           if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); }
         } else {
           if (vid) vid.pause();
@@ -7057,6 +7111,7 @@ ${trkpts}
           document.getElementById("btnVlogPlayPause").textContent = "⏸ 暂停";
           renderVlogSlide();
           scheduleVlogTimer();
+          syncBgmPlayback();
         }
       };
 
@@ -7094,6 +7149,5 @@ ${trkpts}
       }
     })();
   </script>
-
 </body>
 </html>
