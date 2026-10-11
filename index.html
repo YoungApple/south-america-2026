@@ -530,21 +530,39 @@
             <div class="flex items-center justify-between gap-2">
               <div>
                 <div class="text-xs font-extrabold text-[var(--foreground)] flex items-center gap-1.5">
-                  <span>📸 2026 南美旅途实拍集锦 · 莫雷诺冰川特辑 (607张相册精选)</span>
+                  <span id="photosGalleryMainTitle">📸 2026 南美旅途实拍集锦 (30张精选 · 双特辑)</span>
                 </div>
-                <div class="text-[11px] text-[var(--muted-foreground)]">
-                  已连接 Google Photos 相册 (08:27–20:35 全时间轴) · 支持 3 大主题 Vlog 播放
+                <div id="photosGallerySubTitle" class="text-[11px] text-[var(--muted-foreground)]">
+                  已连接 Google Photos 相册 · 支持莫雷诺冰川 &amp; 亚马逊雨林 Vlog 播放与极简图文博客
                 </div>
               </div>
-              <button type="button" onclick="window.openVlogModal('nature')" class="px-2.5 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-xs cursor-pointer shrink-0">
-                🎬 播放冰川 Vlog
-              </button>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" id="btnPlayVlogAction" onclick="window.openDestinationVlog()" class="px-2.5 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-600 text-white shadow-xs cursor-pointer shrink-0 hover:opacity-95 transition">
+                  🎬 播放 Vlog
+                </button>
+              </div>
             </div>
-            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5">
-              <button type="button" onclick="window.openVlogModal('nature')" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30 cursor-pointer">🏔️ 自然之诗版 (纯享风光)</button>
-              <button type="button" onclick="window.openVlogModal('funny')" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 cursor-pointer">😂 搞笑整活版</button>
-              <button type="button" onclick="window.openVlogModal('cinema')" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30 cursor-pointer">🎬 电影时间轴版</button>
-              <button type="button" onclick="window.openVlogModal('mp4')" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-pointer">📹 MP4视频成片</button>
+            <!-- Destination & Mode Switcher Pills -->
+            <div class="flex items-center justify-between gap-1.5 flex-wrap pt-0.5">
+              <div class="flex items-center gap-1 overflow-x-auto no-scrollbar" id="photoDestFilterGroup">
+                <button type="button" onclick="setPhotoDestination('all')" id="destBtn_all" class="shrink-0 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer shadow-2xs">
+                  🌎 全部 (30)
+                </button>
+                <button type="button" onclick="setPhotoDestination('calafate')" id="destBtn_calafate" class="shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                  🏔️ 莫雷诺冰川 (20)
+                </button>
+                <button type="button" onclick="setPhotoDestination('amazon')" id="destBtn_amazon" class="shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer">
+                  🌿 亚马逊雨林 (10)
+                </button>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" onclick="setGalleryViewMode('cards')" id="viewModeBtn_cards" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer shadow-2xs" title="实拍图卡流模式">
+                  📸 卡片
+                </button>
+                <button type="button" onclick="setGalleryViewMode('blog')" id="viewModeBtn_blog" class="px-2.5 py-1 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer" title="极简杂志风图文博客模式">
+                  📖 博客模式
+                </button>
+              </div>
             </div>
           </div>
           <div id="photosGalleryContainer" class="flex-1 overflow-y-auto p-3 space-y-3.5">
@@ -1367,7 +1385,8 @@
         cat: "hotel",
         catZh: "雨林度假村",
         catEn: "Amazon Jungle Lodge",
-        nameZh: "亚马逊生态公园丛林木屋度假村",
+        nameZh: "亚马逊马卡里科丛林木屋 (Amazon Macarico Lodge)",
+        namePt: "Pousada Recanto do Maçarico (Amazon Macarico Lodge)",
         nameEn: "Amazon Ecopark Jungle Lodge",
         nameEs: "Amazon Ecopark Jungle Lodge",
         namePt: "Amazon Ecopark Jungle Lodge",
@@ -5330,36 +5349,223 @@ ${trkpts}
       `;
     };
 
+    
+    let photoDestination = "all"; // 'all' | 'calafate' | 'amazon'
+    let galleryViewMode = "cards"; // 'cards' | 'blog'
+    let blogNarrativeTheme = "nature"; // 'nature' | 'funny' | 'cinema'
+
+    window.setPhotoDestination = function(dest) {
+      photoDestination = dest;
+      const titleEl = document.getElementById("photosGalleryMainTitle");
+      const subEl = document.getElementById("photosGallerySubTitle");
+      const vlogBtn = document.getElementById("btnPlayVlogAction");
+      ["all", "calafate", "amazon"].forEach(k => {
+        const btn = document.getElementById("destBtn_" + k);
+        if (!btn) return;
+        if (k === dest) {
+          btn.className = "shrink-0 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer shadow-2xs";
+        } else {
+          btn.className = "shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer";
+        }
+      });
+      if (dest === "amazon") {
+        if (titleEl) titleEl.textContent = "🌿 亚马逊雨林探险手记 (10篇实拍 · 马卡里科水上木屋)";
+        if (subEl) subEl.textContent = "已连接 D8–D10 雨林相册 · 支持极简图文博客与 4K 雨林 Vlog 播放";
+        if (vlogBtn) {
+          vlogBtn.innerHTML = "🎬 播放雨林 Vlog";
+          vlogBtn.className = "px-2.5 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs cursor-pointer shrink-0 hover:opacity-95 transition";
+        }
+      } else if (dest === "calafate") {
+        if (titleEl) titleEl.textContent = "🏔️ 莫雷诺冰川实拍特辑 (20张时间轴全景)";
+        if (subEl) subEl.textContent = "已连接 D4 冰川相册 (08:27–20:35) · 支持 3 大主题 Vlog 播放与 MP4 成片";
+        if (vlogBtn) {
+          vlogBtn.innerHTML = "🎬 播放冰川 Vlog";
+          vlogBtn.className = "px-2.5 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-xs cursor-pointer shrink-0 hover:opacity-95 transition";
+        }
+      } else {
+        if (titleEl) titleEl.textContent = "📸 2026 南美旅途实拍集锦 (30张精选 · 双特辑)";
+        if (subEl) subEl.textContent = "已连接 Google Photos 相册 · 支持莫雷诺冰川 & 亚马逊雨林 Vlog 播放与极简图文博客";
+        if (vlogBtn) {
+          vlogBtn.innerHTML = "🎬 播放 Vlog";
+          vlogBtn.className = "px-2.5 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-600 text-white shadow-xs cursor-pointer shrink-0 hover:opacity-95 transition";
+        }
+      }
+      renderPhotosGallery();
+    };
+
+    window.setGalleryViewMode = function(mode) {
+      galleryViewMode = mode;
+      const btnCards = document.getElementById("viewModeBtn_cards");
+      const btnBlog = document.getElementById("viewModeBtn_blog");
+      if (btnCards && btnBlog) {
+        if (mode === "blog") {
+          btnBlog.className = "px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer shadow-2xs";
+          btnCards.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer";
+        } else {
+          btnCards.className = "px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[var(--primary)] text-white cursor-pointer shadow-2xs";
+          btnBlog.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer";
+        }
+      }
+      renderPhotosGallery();
+    };
+
+    window.openDestinationVlog = function() {
+      const dest = (photoDestination === "amazon") ? "amazon" : "calafate";
+      window.openVlogModal("nature", dest);
+    };
+
+    window.setBlogNarrativeTheme = function(theme) {
+      blogNarrativeTheme = theme;
+      renderPhotosGallery();
+    };
+
     window.renderPhotosGallery = function() {
       const badge = document.getElementById("photoCountBadge");
       if (badge) badge.textContent = LIVE_PHOTOS.length;
       const box = document.getElementById("photosGalleryContainer");
       if (!box) return;
+
+      // Filter by destination
+      let list = LIVE_PHOTOS;
+      if (photoDestination === "amazon") {
+        list = LIVE_PHOTOS.filter(p => p.layer === "amazon");
+      } else if (photoDestination === "calafate") {
+        list = LIVE_PHOTOS.filter(p => p.layer === "calafate");
+      }
+
+      // Filter by nature vs all
       const filtered = galleryFilterMode === "nature"
-        ? LIVE_PHOTOS.filter(p => p.isNature !== false)
-        : LIVE_PHOTOS;
+        ? list.filter(p => p.isNature !== false)
+        : list;
+
+      // ==================== VIEW MODE 1: CLEAN BLOG STYLE ====================
+      if (galleryViewMode === "blog") {
+        const isAmazon = (photoDestination === "amazon" || (photoDestination === "all" && filtered.some(p => p.layer === "amazon")));
+        const heroBanner = isAmazon ? `
+          <div class="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/60 via-slate-900/80 to-slate-950 p-5 text-white space-y-3.5 shadow-lg">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-400 text-slate-950 font-mono-code tracking-wide">🌿 AMAZON EXPEDITION FIELD NOTES</span>
+              <span class="text-xs text-emerald-300/80 font-mono-code">03°08'S 60°01'W · D8–D10 全程实录</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-black tracking-tight leading-snug">深入地球之肺：从黑白两河汇流到马卡里科水上木屋</h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+              告别文明信号，沿内格罗河与索利芒斯河水路向南深入热带雨林腹地。在水上木屋枕涛入眠，手执竹竿静钓食人鱼，乘独木舟穿行伊加波水淹森林，夜巡暗流寻觅凯门鳄。这是一段完全融入自然脉动的原始科考手记。
+            </p>
+            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap border-t border-emerald-500/20">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] text-slate-400 font-bold">解说视角：</span>
+                <button onclick="setBlogNarrativeTheme('nature')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${blogNarrativeTheme === 'nature' ? 'bg-emerald-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">🌿 自然科考</button>
+                <button onclick="setBlogNarrativeTheme('cinema')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${blogNarrativeTheme === 'cinema' ? 'bg-purple-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">🎬 电影慢门</button>
+                <button onclick="setBlogNarrativeTheme('funny')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${blogNarrativeTheme === 'funny' ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">😂 真实整活</button>
+              </div>
+              <button onclick="window.openVlogModal('nature', 'amazon')" class="px-3 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 hover:opacity-95 cursor-pointer flex items-center gap-1 shadow-xs">
+                🎬 播放雨林动态 Vlog ↗
+              </button>
+            </div>
+          </div>
+        ` : `
+          <div class="rounded-3xl border border-sky-500/30 bg-gradient-to-br from-slate-900 via-sky-950/50 to-slate-950 p-5 text-white space-y-3.5 shadow-lg">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <span class="px-3 py-1 rounded-full text-xs font-black bg-sky-400 text-slate-950 font-mono-code tracking-wide">🏔️ PATAGONIA EXPEDITION LOG</span>
+              <span class="text-xs text-sky-300/80 font-mono-code">50°28'S 73°02'W · D4 莫雷诺冰川全记录</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-black tracking-tight leading-snug">巴塔哥尼亚的蓝色史诗：莫雷诺冰川 12 小时时间轴</h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+              从晨曦雨雾中的巴塔哥尼亚11号公路，到70米冰墙压顶下的航渡；从手执冰镐踏足幽蓝冰裂隙，到在三万年老冰中斟入威士忌。纯净与壮阔在世界尽头交织。
+            </p>
+            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap border-t border-sky-500/20">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] text-slate-400 font-bold">解说视角：</span>
+                <button onclick="setBlogNarrativeTheme('nature')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${blogNarrativeTheme === 'nature' ? 'bg-sky-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">🏔️ 自然纪实</button>
+                <button onclick="setBlogNarrativeTheme('cinema')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${blogNarrativeTheme === 'cinema' ? 'bg-purple-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">🎬 电影慢门</button>
+                <button onclick="setBlogNarrativeTheme('funny')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${blogNarrativeTheme === 'funny' ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">😂 真实整活</button>
+              </div>
+              <button onclick="window.openVlogModal('nature', 'calafate')" class="px-3 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-sky-400 to-indigo-400 text-slate-950 hover:opacity-95 cursor-pointer flex items-center gap-1 shadow-xs">
+                🎬 播放冰川动态 Vlog ↗
+              </button>
+            </div>
+          </div>
+        `;
+
+        box.innerHTML = heroBanner + filtered.map((ph, idx) => {
+          let chosenCaption = ph.captionNature || ph.captionZh;
+          if (blogNarrativeTheme === "funny" && ph.captionFunny) chosenCaption = ph.captionFunny;
+          if (blogNarrativeTheme === "cinema" && ph.captionCinema) chosenCaption = ph.captionCinema;
+
+          const layerBadge = ph.layer === "amazon" 
+            ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">🌿 亚马逊</span>`
+            : `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-sky-500/20 text-sky-600 dark:text-sky-400">🏔️ 冰川</span>`;
+
+          return `
+            <article class="rounded-3xl border border-[var(--border)] bg-[var(--card)] overflow-hidden shadow-xs space-y-3 transition hover:shadow-md">
+              <div onclick="openPhotoLightbox('${ph.id}')" class="relative w-full h-64 sm:h-80 bg-black cursor-pointer overflow-hidden group">
+                <img src="${ph.url}" alt="${ph.titleZh}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out" />
+                <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-black/80 text-white backdrop-blur-md font-mono-code">${ph.time ? ph.day + ' · ' + ph.time : ph.day}</span>
+                  ${layerBadge}
+                </div>
+                <span class="absolute bottom-3 right-3 px-3 py-1 rounded-xl text-xs font-bold bg-black/75 text-white backdrop-blur-md">🔍 点击看原图 & 3大视角</span>
+              </div>
+              <div class="p-4 sm:p-5 space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight leading-snug">${ph.seq ? '#' + String(ph.seq).padStart(2, '0') + ' ' : ''}${ph.titleZh}</h3>
+                    <div class="text-xs font-bold text-[var(--primary)] mt-1 flex items-center gap-1">
+                      <span>📍 ${ph.locationZh}</span>
+                    </div>
+                  </div>
+                  <button onclick="selectPlace(${ph.placeId || 14}, true, true)" class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-extrabold bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--primary)] hover:text-white transition cursor-pointer">
+                    🗺️ 定位站点
+                  </button>
+                </div>
+                
+                <p class="text-xs sm:text-sm text-[var(--foreground)] leading-relaxed font-sans">
+                  ${chosenCaption}
+                </p>
+
+                ${ph.captionBlog ? `
+                  <div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-[var(--foreground)] leading-relaxed">
+                    <strong class="text-emerald-600 dark:text-emerald-400 font-extrabold">💡 科考与生存贴士：</strong>${ph.captionBlog}
+                  </div>
+                ` : ''}
+
+                <div class="flex items-center justify-between gap-2 pt-1 border-t border-[var(--border)]/60 flex-wrap">
+                  <div class="flex flex-wrap gap-1">
+                    ${(ph.tags || []).map(t => `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[var(--content)] text-[var(--muted-foreground)]">#${t}</span>`).join("")}
+                  </div>
+                  <span class="text-[10px] text-[var(--muted-foreground)] font-mono-code">${ph.city || ''}</span>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+        return;
+      }
+
+      // ==================== VIEW MODE 2: CARDS GRID STYLE ====================
       const filterBar = `
-        <div class="p-2.5 rounded-2xl border border-sky-500/30 bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 flex items-center justify-between gap-2 flex-wrap">
+        <div class="p-2.5 rounded-2xl border border-[var(--border)] bg-[var(--card)] flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-1.5">
-            <button onclick="setGalleryFilter('all')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${galleryFilterMode === 'all' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)]'}">
-              ⏱️ 完整时间轴 (${LIVE_PHOTOS.length})
+            <button onclick="setGalleryFilter('all')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${galleryFilterMode === 'all' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--content)] text-[var(--foreground)]'}">
+              ⏱️ 全部时间轴 (${list.length})
             </button>
-            <button onclick="setGalleryFilter('nature')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${galleryFilterMode === 'nature' ? 'bg-sky-600 text-white' : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)]'}">
-              🏔️ 纯自然风光 (${LIVE_PHOTOS.filter(x => x.isNature !== false).length})
+            <button onclick="setGalleryFilter('nature')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold cursor-pointer ${galleryFilterMode === 'nature' ? 'bg-sky-600 text-white' : 'bg-[var(--content)] text-[var(--foreground)]'}">
+              🏔️ 纯自然生境 (${list.filter(x => x.isNature !== false).length})
             </button>
           </div>
-          <a href="https://photos.app.goo.gl/WCvYyE3S3JaTGm7MA" target="_blank" rel="noopener" class="text-[11px] font-bold text-[var(--primary)] hover:underline">
-            🔗 打开原 Google Photos 相册 (607项) ↗
-          </a>
+          <button onclick="setGalleryViewMode('blog')" class="text-[11px] font-bold text-[var(--primary)] hover:underline cursor-pointer flex items-center gap-1">
+            <span>📖 切换极简图文博客模式</span> ›
+          </button>
         </div>
       `;
+
       box.innerHTML = filterBar + filtered.map((ph, idx) => `
         <div class="rounded-2xl border border-[var(--border)] bg-[var(--card)] overflow-hidden shadow-xs space-y-2.5">
           <div onclick="openPhotoLightbox('${ph.id}')" class="relative w-full h-64 sm:h-72 bg-black cursor-pointer overflow-hidden group">
             <img src="${ph.url}" alt="${ph.titleZh}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
             <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
               <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-black/80 text-white backdrop-blur-xs font-mono-code">${ph.time ? ph.day + ' · ' + ph.time : ph.day}</span>
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${ph.isNature !== false ? 'bg-sky-600/90' : 'bg-amber-500/90'} text-white backdrop-blur-xs">${ph.isNature !== false ? '🏔️ 自然奇观' : '🕺 精彩瞬间'}</span>
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold ${ph.layer === 'amazon' ? 'bg-emerald-600/90' : 'bg-sky-600/90'} text-white backdrop-blur-xs">${ph.layer === 'amazon' ? '🌿 亚马逊' : '🏔️ 冰川'}</span>
             </div>
             <span class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-black/75 text-white">🔍 查看3主题解说 & 原图</span>
           </div>
@@ -5383,7 +5589,6 @@ ${trkpts}
       `).join("");
     };
 
-    // Fetch latest photos/manifest.json dynamically so new synced photos appear without touching HTML
     fetch("photos/manifest.json?t=" + Date.now())
       .then(r => r.ok ? r.json() : null)
       .then(data => {
@@ -6790,7 +6995,14 @@ ${trkpts}
 
       <div class="flex items-center justify-between gap-2 flex-wrap bg-slate-900/90 border border-slate-700/80 rounded-2xl px-3 py-2">
         <div class="flex items-center gap-2 min-w-0">
-          <span class="px-2 py-0.5 rounded-lg text-[11px] font-black bg-sky-500 text-slate-950 shrink-0">🎬 冰川 VLOG</span>
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" id="vlogDestBtn_calafate" onclick="window.setVlogDestination('calafate')" class="px-2.5 py-1 rounded-xl text-[11px] font-black bg-sky-500 text-slate-950 cursor-pointer shadow-xs">
+              🏔️ 冰川 Vlog
+            </button>
+            <button type="button" id="vlogDestBtn_amazon" onclick="window.setVlogDestination('amazon')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">
+              🌿 亚马逊 Vlog
+            </button>
+          </div>
           <div class="min-w-0">
             <div id="vlogHeaderTitle" class="text-xs sm:text-sm font-extrabold text-white truncate">佩里托莫雷诺冰川 · 12小时时间轴纪实 (08:27 – 20:35)</div>
             <div id="vlogNowPlayingText" class="text-[10px] text-amber-300 font-bold truncate">🎸 当前西语户外配乐：Jorge Drexler《Movimiento》(拉丁格莱美年度歌曲 · 远征民谣摇滚)</div>
@@ -6929,8 +7141,33 @@ ${trkpts}
       let vlogAudioOn = true;
       let currentBgmId = 1;
 
+      let vlogDestination = "calafate"; // 'calafate' | 'amazon'
+
+      window.setVlogDestination = function(dest) {
+        vlogDestination = dest;
+        vlogIdx = 0;
+        const btnCal = document.getElementById("vlogDestBtn_calafate");
+        const btnAmz = document.getElementById("vlogDestBtn_amazon");
+        if (btnCal && btnAmz) {
+          if (dest === "amazon") {
+            btnAmz.className = "px-2.5 py-1 rounded-xl text-[11px] font-black bg-emerald-500 text-slate-950 cursor-pointer shadow-xs";
+            btnCal.className = "px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+          } else {
+            btnCal.className = "px-2.5 py-1 rounded-xl text-[11px] font-black bg-sky-500 text-slate-950 cursor-pointer shadow-xs";
+            btnAmz.className = "px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+          }
+        }
+        renderVlogSlide();
+        scheduleVlogTimer();
+      };
+
       function getVlogList() {
-        const base = LIVE_PHOTOS.filter(p => p.date === "2026-10-04");
+        let base = [];
+        if (vlogDestination === "amazon") {
+          base = LIVE_PHOTOS.filter(p => p.layer === "amazon");
+        } else {
+          base = LIVE_PHOTOS.filter(p => p.layer === "calafate");
+        }
         if (vlogTheme === "pure_nature") {
           return base.filter(p => p.isNature !== false);
         }
@@ -7007,29 +7244,57 @@ ${trkpts}
         }
         if (bgBlur) bgBlur.src = item.url;
 
-        document.getElementById("vlogTimeBadge").textContent = `⏱️ 10月4日 ${item.time || "D4"}`;
+        const hTitle = document.getElementById("vlogHeaderTitle");
+        if (hTitle) {
+          if (vlogDestination === "amazon") {
+            hTitle.textContent = "🌿 亚马逊雨林探险 · 玛瑙斯至马卡里科水上木屋纪实 (D8–D10)";
+          } else {
+            hTitle.textContent = "佩里托莫雷诺冰川 · 12小时时间轴纪实 (08:27 – 20:35)";
+          }
+        }
+        document.getElementById("vlogTimeBadge").textContent = `⏱️ ${item.day || ""} ${item.time || ""}`;
         document.getElementById("vlogLocBadge").textContent = `📍 ${item.locationZh}`;
         document.getElementById("vlogSlideTitle").textContent = `#${String(vlogIdx + 1).padStart(2, "0")} ${item.titleZh}`;
         document.getElementById("vlogSlideCounter").textContent = `${String(vlogIdx + 1).padStart(2, "0")} / ${String(list.length).padStart(2, "0")}`;
 
         const tagEl = document.getElementById("vlogThemeTag");
         const capEl = document.getElementById("vlogSlideCaption");
-        if (vlogTheme === "funny") {
-          tagEl.textContent = "😂 巴塔哥尼亚精神状态美丽版";
-          tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-400 text-slate-950";
-          capEl.textContent = item.captionFunny || item.captionZh;
-        } else if (vlogTheme === "cinema") {
-          tagEl.textContent = "🎬 50°28'S 73°02'W · 王家卫电影手记";
-          tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-purple-400 text-slate-950";
-          capEl.textContent = item.captionCinema || item.captionZh;
-        } else if (vlogTheme === "pure_nature") {
-          tagEl.textContent = "🌿 纯享自然奇观 (100% 无人物风光)";
-          tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-400 text-slate-950";
-          capEl.textContent = item.captionNature || item.captionZh;
+        if (vlogDestination === "amazon") {
+          if (vlogTheme === "funny") {
+            tagEl.textContent = "🦟 亚马逊生存整活 · 30% DEET 与红腹食人鱼";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-400 text-slate-950";
+            capEl.textContent = item.captionFunny || item.captionZh;
+          } else if (vlogTheme === "cinema") {
+            tagEl.textContent = "🎬 03°08'S 60°01'W · 绿光与黑水电影手记";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-purple-400 text-slate-950";
+            capEl.textContent = item.captionCinema || item.captionZh;
+          } else if (vlogTheme === "pure_nature") {
+            tagEl.textContent = "🌿 亚马逊纯享自然 (水淹林与两河汇流)";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-400 text-slate-950";
+            capEl.textContent = item.captionNature || item.captionZh;
+          } else {
+            tagEl.textContent = "🌿 亚马逊生境 · 原生雨林科考风";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-400 text-slate-950";
+            capEl.textContent = item.captionNature || item.captionZh;
+          }
         } else {
-          tagEl.textContent = "🏔️ 自然之诗 · 万年蓝冰纪实";
-          tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-sky-400 text-slate-950";
-          capEl.textContent = item.captionNature || item.captionZh;
+          if (vlogTheme === "funny") {
+            tagEl.textContent = "😂 巴塔哥尼亚精神状态美丽版";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-400 text-slate-950";
+            capEl.textContent = item.captionFunny || item.captionZh;
+          } else if (vlogTheme === "cinema") {
+            tagEl.textContent = "🎬 50°28'S 73°02'W · 王家卫电影手记";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-purple-400 text-slate-950";
+            capEl.textContent = item.captionCinema || item.captionZh;
+          } else if (vlogTheme === "pure_nature") {
+            tagEl.textContent = "🌿 纯享自然奇观 (100% 无人物风光)";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-400 text-slate-950";
+            capEl.textContent = item.captionNature || item.captionZh;
+          } else {
+            tagEl.textContent = "🏔️ 自然之诗 · 万年蓝冰纪实";
+            tagEl.className = "px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-sky-400 text-slate-950";
+            capEl.textContent = item.captionNature || item.captionZh;
+          }
         }
 
         // Progress bars
@@ -7061,8 +7326,20 @@ ${trkpts}
         }, 4200);
       }
 
-      window.openVlogModal = function(theme) {
+      window.openVlogModal = function(theme, dest) {
+        if (dest) vlogDestination = dest;
         document.getElementById("saVlogModal").classList.remove("hidden");
+        const btnCal = document.getElementById("vlogDestBtn_calafate");
+        const btnAmz = document.getElementById("vlogDestBtn_amazon");
+        if (btnCal && btnAmz) {
+          if (vlogDestination === "amazon") {
+            btnAmz.className = "px-2.5 py-1 rounded-xl text-[11px] font-black bg-emerald-500 text-slate-950 cursor-pointer shadow-xs";
+            btnCal.className = "px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+          } else {
+            btnCal.className = "px-2.5 py-1 rounded-xl text-[11px] font-black bg-sky-500 text-slate-950 cursor-pointer shadow-xs";
+            btnAmz.className = "px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+          }
+        }
         window.setVlogTheme(theme || "nature");
       };
 
